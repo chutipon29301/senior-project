@@ -2,4 +2,5 @@ version: '3.7'
 
 services: 
   smartcontract.example.com:
+    container_name: smartcontract.example.com
     image: python:3
