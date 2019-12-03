@@ -8,3 +8,10 @@ services:
     command: sh -c './startDev.sh'
     ports: 
       - 5000:5000
+  jupyter.example.com:
+    container_name: jupyter.example.com
+    image: jupyter/scipy-notebook
+    volumes: 
+      - ./jupyter:/home/jovyan/work
+    ports: 
+      - 8888:8888
