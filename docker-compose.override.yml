@@ -1,0 +1,10 @@
+version: '3.7'
+
+services: 
+  smartcontract.example.com:
+    working_dir: /home/smartcontract
+    volumes: 
+      - ./smartContracts:/home/smartcontract
+    command: sh -c './startDev.sh'
+    ports: 
+      - 5000:5000
