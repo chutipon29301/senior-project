@@ -1,0 +1,149 @@
+version: "3.2"
+
+services:
+  # Orderer
+  orderer.example.com:
+    container_name: orderer.example.com
+    image: hyperledger/fabric-orderer
+    environment:
+      ORDERER_GENERAL_LOGLEVEL: debug
+      ORDERER_GENERAL_LISTENADDRESS: 0.0.0.0
+      ORDERER_GENERAL_GENESISMETHOD: file
+      ORDERER_GENERAL_GENESISFILE: /etc/hyperledger/configtx/genesis.block
+      ORDERER_GENERAL_LOCALMSPID: OrdererMSP
+      ORDERER_GENERAL_LOCALMSPDIR: /etc/hyperledger/msp/orderer/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    volumes:
+      - ./config/:/etc/hyperledger/configtx
+      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/:/etc/hyperledger/msp/orderer
+      - ./crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/:/etc/hyperledger/msp/peerBuilding
+    networks:
+      - basic
+  # Organization1: Building
+  ca.building.example.com:
+    container_name: ca.building.example.com
+    image: hyperledger/fabric-ca
+    environment:
+      FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
+      FABRIC_CA_SERVER_CA_NAME: ca.building.example.com
+      FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.building.example.com-cert.pem
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/66c5757e482414b53bcf7cd705f0280a7185d376817d150f7efc3dd23989546e_sk
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/building.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - basic
+  # Organization - Building: peer 0
+  peer0.building.example.com:
+    container_name: peer0.building.example.com
+    image: hyperledger/fabric-peer
+    environment:
+      CORE_VM_ENDPOINT: unix:///host/var/run/docker.sock
+      CORE_PEER_ID: peer0.building.example.com
+      CORE_LOGGING_PEER: debug
+      CORE_CHAINCODE_LOGGING_LEVEL: DEBUG
+      CORE_PEER_LOCALMSPID: BuildingMSP
+      CORE_PEER_MSPCONFIGPATH: /etc/hyperledger/msp/peer/
+      CORE_PEER_ADDRESS: peer0.building.example.com:7051
+      CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE: ${COMPOSE_PROJECT_NAME}_basic
+      CORE_LEDGER_STATE_STATEDATABASE: CouchDB
+      CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS: couchdb.peer0.building.example.com:5984
+      CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME: admin
+      CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD: adminpw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/building.example.com/users:/etc/hyperledger/msp/users
+      - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+      - couchdb.peer0.building.example.com
+    networks:
+      - basic
+  couchdb.peer0.building.example.com:
+    container_name: couchdb.peer0.building.example.com
+    image: hyperledger/fabric-couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: adminpw
+    networks:
+      - basic
+  # Organization2: Photovoltaic
+  ca.photovoltaic.example.com:
+    container_name: ca.photovoltaic.example.com
+    image: hyperledger/fabric-ca
+    environment:
+      FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
+      FABRIC_CA_SERVER_CA_NAME: ca.photovoltaic.example.com
+      FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.photovoltaic.example.com-cert.pem
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/c030dad457c136d5b32fa03e77fd93d8adf088055ca02de0734080449b34f50d_sk
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/photovoltaic.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - basic
+  # Organization - Photovoltaic: peer 0
+  peer0.photovoltaic.example.com:
+    container_name: peer0.photovoltaic.example.com
+    image: hyperledger/fabric-peer
+    environment:
+      CORE_VM_ENDPOINT: unix:///host/var/run/docker.sock
+      CORE_PEER_ID: peer0.photovoltaic.example.com
+      CORE_LOGGING_PEER: debug
+      CORE_CHAINCODE_LOGGING_LEVEL: DEBUG
+      CORE_PEER_LOCALMSPID: PhotovoltaicMSP
+      CORE_PEER_MSPCONFIGPATH: /etc/hyperledger/msp/peer/
+      CORE_PEER_ADDRESS: peer0.photovoltaic.example.com:7051
+      CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE: ${COMPOSE_PROJECT_NAME}_basic
+      CORE_LEDGER_STATE_STATEDATABASE: CouchDB
+      CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS: couchdb.peer0.photovoltaic.example.com:5984
+      CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME: admin
+      CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD: adminpw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./crypto-config/peerOrganizations/photovoltaic.example.com/peers/peer0.photovoltaic.example.com/msp:/etc/hyperledger/msp/peer
+      - ./crypto-config/peerOrganizations/photovoltaic.example.com/users:/etc/hyperledger/msp/users
+      - ./config:/etc/hyperledger/configtx
+    depends_on:
+      - orderer.example.com
+      - couchdb.peer0.photovoltaic.example.com
+    networks:
+      - basic
+  couchdb.peer0.photovoltaic.example.com:
+    container_name: couchdb.peer0.photovoltaic.example.com
+    image: hyperledger/fabric-couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: adminpw
+    networks:
+      - basic
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      GOPATH: /opt/gopath
+      CORE_VM_ENDPOINT: unix:///host/var/run/docker.sock
+      FABRIC_LOGGING_SPEC: info
+      CORE_PEER_ID: cli
+      CORE_PEER_ADDRESS: peer0.photovoltaic.example.com:7051
+      CORE_PEER_LOCALMSPID: PhotovoltaicMSP
+      CORE_PEER_MSPCONFIGPATH: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/photovoltaic.example.com/users/Admin@photovoltaic.example.com/msp
+      CORE_CHAINCODE_KEEPALIVE: 10
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./../chaincode/:/opt/gopath/src/github.com/
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+    networks:
+        - basic
+networks:
+  basic:
