@@ -4,6 +4,6 @@ import { SellerController } from './seller.controller';
 
 @Module({
   providers: [SellerService],
-  controllers: [SellerController]
+  controllers: [SellerController],
 })
 export class SellerModule {}
