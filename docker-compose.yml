@@ -8,4 +8,4 @@ services:
     container_name: fabric.example.com
     image: node:10-alpine
     environment: 
-      SMART_CONTRACT_API_URL: smartcontract.example.com
+      SMART_CONTRACT_API_URL: smartcontract.example.com:5000
