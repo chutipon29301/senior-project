@@ -57,8 +57,16 @@ def poly_intersection(poly1, poly2):
                     and intersect_y>p2_first_point[1]\
                 ):
                     return i+1,j+1 #Buyer index,Seller index
-    for i in range(len(poly1)): 
-        if poly1[i][0]>poly2[-1][0]: 
-            potential = i
-            break
+    p1_max=max([p[0] for p in poly1])
+    p2_max=max([p[0] for p in poly2])
+    if(p2_max<p1_max):
+        for i in range(len(poly1)): 
+            if poly1[i][0]>poly2[-1][0]: 
+                potential = i
+                break
+    else:
+        for i in range(len(poly2)): 
+            if poly2[i][0]>poly1[-1][0]: 
+                potential = i
+                break
     return potential,len(poly2)-1 #Buyer index,Seller index

@@ -7,9 +7,10 @@ class Buyer:
     bsi=0;mti=0
     utilityIndex=0
     # default constructor 
-    def __init__(self,quantityWant,bidPrice,quantityLeft=quantityWant): 
+    def __init__(self,quantityWant,bidPrice,isGrid=False): 
         self.quantityWant = quantityWant
-        self.quantityLeft = quantityLeft
+        if(isGrid):self.quantityLeft = 0
+        else:self.quantityLeft = quantityWant
         self.bidPrice = bidPrice
         self.totalBoughtPrice = 0
         self.bsi = 0;self.mti=0
