@@ -13,27 +13,22 @@ def weighted_avg(buyers,sellers):
 
 def discriminatory_kda(buyers,sellers):
     k=1
-    totalQuantityWant=sum([buyer.quantityWant for buyer in buyers])
-    totalQuantityAvailable=sum([seller.quantityAvailable for seller in sellers])
     return dis_kda(k,buyers,sellers)
 
 def uniform_kda(buyers,sellers):
     k=1
-    totalQuantityWant=sum([buyer.quantityWant for buyer in buyers])
-    totalQuantityAvailable=sum([seller.quantityAvailable for seller in sellers])
-    if(totalQuantityWant>totalQuantityAvailable):sellers.append(Seller(totalQuantityWant-totalQuantityAvailable,5))
-    if(totalQuantityAvailable>totalQuantityWant):buyers.append(Buyer(totalQuantityAvailable-totalQuantityWant,1.68))
     return uni_kda(k,buyers,sellers)
 
 def dis_kda(k,buyers,sellers):
     # print("buyers:",buyers,'\nseller:',sellers)
     print("DisKDA\nk:",k)
     buyers_sorted,sellers_sorted=natural_sorting(buyers,sellers)
-    listing=[]
+    [seller.print_seller() for seller in sellers_sorted]
     i=0
     for buyer in buyers_sorted:
+        if(buyer.quantityLeft==0):continue
         for seller in sellers_sorted:
-            if(seller.quantityLeft==0): continue
+            if(seller.quantityLeft==0 or buyer.quantityLeft==0): continue
             elif(seller.quantityLeft<=buyer.quantityLeft):
                 print("seller<buyer")
                 boughtQuantity = seller.quantityLeft
@@ -54,7 +49,6 @@ def dis_kda(k,buyers,sellers):
             seller.print_seller()
             print("*")
             buyer.print_buyer()
-            listing.append([seller,buyer])
     buyersComplete,sellersComplete=addingGrid(buyers_sorted,sellers_sorted)
     buyersResult,sellersResult=updateEvalutaionIndex(buyersComplete,sellersComplete)
     return buyersResult,sellersResult
@@ -72,9 +66,9 @@ def trading_iterate(price,buyers,sellers):
     listing=[]
     i=0
     for buyer in buyers:
+        if(buyer.quantityLeft==0):continue
         for seller in sellers:
-            seller.print_seller()
-            if(seller.quantityLeft==0): continue
+            if(seller.quantityLeft==0 or buyer.quantityLeft==0): continue
             elif(seller.quantityLeft<=buyer.quantityLeft):
                 print("seller<buyer")
                 boughtQuantity = seller.quantityLeft
@@ -103,20 +97,20 @@ def addingGrid(buyers,sellers):
     totalQuantityWantLeft=sum([buyer.quantityLeft for buyer in buyers])
     totalQuantityAvailableLeft=sum([seller.quantityLeft for seller in sellers])
     if(totalQuantityWantLeft>totalQuantityAvailableLeft):
-        grid=Seller(totalQuantityWantLeft-totalQuantityAvailableLeft,5,0)
+        grid=Seller(totalQuantityWantLeft-totalQuantityAvailableLeft,5,True)
         for buyer in buyers:
-            buyer.totalBoughtPrice+=buyer.quantityLeft*grid.reservePrice
-            buyer.transaction.append(Transaction(buyer.quantityLeft,grid.reservePrice))
-            grid.transaction.append(Transaction(buyer.quantityLeft,grid.reservePrice))
-            buyer.quantityLeft=0
-        sellers.append(grid)
+            if(buyer.quantityLeft>0):
+                buyer.totalBoughtPrice+=buyer.quantityLeft*grid.reservePrice
+                buyer.transaction.append(Transaction(buyer.quantityLeft,grid.reservePrice))
+                grid.transaction.append(Transaction(buyer.quantityLeft,grid.reservePrice))
+                buyer.quantityLeft=0
     if(totalQuantityAvailableLeft>totalQuantityWantLeft):
-        grid=Buyer(totalQuantityAvailableLeft-totalQuantityWantLeft,1.68,0)
+        grid=Buyer(totalQuantityAvailableLeft-totalQuantityWantLeft,1.68,True)
         for seller in sellers:
-            seller.totalSoldPrice+=seller.quantityLeft*grid.reservePrice
-            seller.transaction.append(Transaction(seller.quantityLeft,grid.reservePrice))
-            grid.transaction.append(Transaction(seller.quantityLeft,grid.reservePrice))
-            seller.quantityLeft=0
-        buyers.append(grid)
+            if(seller.quantityLeft>0):
+                seller.totalSoldPrice+=seller.quantityLeft*grid.bidPrice
+                seller.transaction.append(Transaction(seller.quantityLeft,grid.bidPrice))
+                grid.transaction.append(Transaction(seller.quantityLeft,grid.bidPrice))
+                seller.quantityLeft=0
     return buyers,sellers
 
