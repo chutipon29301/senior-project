@@ -4,6 +4,6 @@ import { SmartContractsController } from './smart-contracts.controller';
 
 @Module({
   providers: [SmartContractsService],
-  controllers: [SmartContractsController]
+  controllers: [SmartContractsController],
 })
 export class SmartContractsModule {}
