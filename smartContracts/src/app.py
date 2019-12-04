@@ -34,11 +34,10 @@ def disKDA():
     # sellers_result = [obj.to_dict() for obj in sellers_result]
     # data['buyers'],data['sellers'] = json.dumps({"results": buyers_result}),json.dumps({"results": sellers_result})
     for buyer in buyers_result:
-        buyer.transaction=json.dumps([ob.__dict__ for ob in buyer.transaction])
+        buyer.transaction=[ob.__dict__ for ob in buyer.transaction]
     for seller in sellers_result:
-        seller.transaction=json.dumps([ob.__dict__ for ob in seller.transaction])
-    data['buyers'],data['sellers'] = json.dumps([ob.__dict__ for ob in buyers_result]),json.dumps([ob.__dict__ for ob in sellers_result])
-    return data
+        seller.transaction=[ob.__dict__ for ob in seller.transaction]
+    return json.dumps({"buyers":[ob.__dict__ for ob in buyers_result],"sellers":[ob.__dict__ for ob in sellers_result]})
 
 @app.route('/uniKDA', methods=['POST'])
 def uniKDA():
