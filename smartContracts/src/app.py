@@ -52,11 +52,11 @@ def uniKDA():
     buyers_result,sellers_result=uniform_kda(buyers,sellers)
     print(buyers_result,sellers_result)
     for buyer in buyers_result:
-        buyer.transaction=json.dumps([ob.__dict__ for ob in buyer.transaction])
+        buyer.transaction=[ob.__dict__ for ob in buyer.transaction]
     for seller in sellers_result:
-        seller.transaction=json.dumps([ob.__dict__ for ob in seller.transaction])
-    data['buyers'],data['sellers'] = json.dumps([ob.__dict__ for ob in buyers_result]),json.dumps([ob.__dict__ for ob in sellers_result])
-    return data
+        seller.transaction=[ob.__dict__ for ob in seller.transaction]
+    return json.dumps({"buyers":[ob.__dict__ for ob in buyers_result],"sellers":[ob.__dict__ for ob in sellers_result]})
+
 
 @app.route('/weightedAvg', methods=['POST'])
 def weightedAvg():
@@ -71,11 +71,11 @@ def weightedAvg():
     buyers_result,sellers_result=weighted_avg(buyers,sellers)
     print(buyers_result,sellers_result)
     for buyer in buyers_result:
-        buyer.transaction=json.dumps([ob.__dict__ for ob in buyer.transaction])
+        buyer.transaction=[ob.__dict__ for ob in buyer.transaction]
     for seller in sellers_result:
-        seller.transaction=json.dumps([ob.__dict__ for ob in seller.transaction])
-    data['buyers'],data['sellers'] = json.dumps([ob.__dict__ for ob in buyers_result]),json.dumps([ob.__dict__ for ob in sellers_result])
-    return data
+        seller.transaction=[ob.__dict__ for ob in seller.transaction]
+    return json.dumps({"buyers":[ob.__dict__ for ob in buyers_result],"sellers":[ob.__dict__ for ob in sellers_result]})
+
 
 if __name__ == '__main__':
     app.run()
