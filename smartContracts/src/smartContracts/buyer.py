@@ -4,12 +4,16 @@ class Buyer:
     bidPrice = 0
     transaction =[]
     totalBoughtPrice = 0
+    bsi=0;mti=0
+    utilityIndex=0
     # default constructor 
-    def __init__(self,quantityWant,bidPrice): 
+    def __init__(self,quantityWant,bidPrice,quantityLeft=quantityWant): 
         self.quantityWant = quantityWant
-        self.quantityLeft = quantityWant
+        self.quantityLeft = quantityLeft
         self.bidPrice = bidPrice
         self.totalBoughtPrice = 0
+        self.bsi = 0;self.mti=0
+        self.utilityIndex=0
         self.transaction=[]
   
     # a method for printing data members 
@@ -18,7 +22,9 @@ class Buyer:
         '\nbidPrice:',self.bidPrice,
         "\nbuyer q left:",self.quantityLeft,
         "\nbuyer bought transaction:",self.transaction,
-        "\nbuyer totalBoughtPrice price:",self.totalBoughtPrice
+        "\nbuyer totalBoughtPrice price:",self.totalBoughtPrice,
+         "\nbsi:",self.bsi,
+         "\nmti:",self.mti
         ) 
         # print("====")
     def to_dict(self):
