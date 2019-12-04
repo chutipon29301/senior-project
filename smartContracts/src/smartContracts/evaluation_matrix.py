@@ -10,7 +10,7 @@ def updateEvalutaionIndex(buyers,sellers):
         except ZeroDivisionError:
             buyer.bsi= 0
     for seller in sellers:
-        seller.utilityIndex=round((GRID_BOUGHT_PRICE*seller.quantityAvailable)-seller.totalSoldPrice,2)
+        seller.utilityIndex=round(seller.totalSoldPrice-(GRID_BOUGHT_PRICE*seller.quantityAvailable),2)
         try:
             seller.ssi=round(seller.totalSoldPrice/(seller.quantityAvailable*seller.reservePrice),2)
         except ZeroDivisionError:
