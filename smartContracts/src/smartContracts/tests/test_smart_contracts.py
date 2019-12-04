@@ -29,6 +29,7 @@ def generate_test_set():
 def test_dis_kda():
     buyers,sellers=generate_test_set()
     buyers_traded, sellers_traded=discriminatory_kda(buyers,sellers)
+     #[buyer.print_buyer() for buyer in buyers_traded]
     assert sum([buyer.quantityLeft for buyer in buyers_traded]) == 0 and sum([seller.quantityLeft for seller in sellers_traded])==0
 
 def test_uni_kda():
