@@ -28,17 +28,17 @@ def generate_test_set():
 
 def test_dis_kda():
     buyers,sellers=generate_test_set()
-    obj=discriminatory_kda(buyers,sellers)
-    print(obj['Buyers'])
-    assert len(obj['Buyers']) == len(buyers)
+    buyers_traded, sellers_traded=discriminatory_kda(buyers,sellers)
+    assert sum([buyer.quantityLeft for buyer in buyers_traded]) == 0 and sum([seller.quantityLeft for seller in sellers_traded])==0
 
 def test_uni_kda():
     buyers,sellers=generate_test_set()
-    listing, buyers_traded, sellers_traded= uniform_kda(buyers,sellers) 
-    assert len(listing)!=0 and len(buyers_traded) == len(buyers) and len(sellers_traded) == len(sellers)
+    buyers_traded, sellers_traded= uniform_kda(buyers,sellers) 
+    assert sum([buyer.quantityLeft for buyer in buyers_traded]) == 0 and sum([seller.quantityLeft for seller in sellers_traded])==0
+
 
 def test_weighted_avg():
     buyers,sellers=generate_test_set()
-    listing, buyers_traded, sellers_traded=weighted_avg(buyers,sellers)
+    buyers_traded, sellers_traded=weighted_avg(buyers,sellers)
     # assert len(listing)!=0 and len(buyers_traded) == len(buyers) and len(sellers_traded) == len(sellers)
-    assert len(listing)!=0
+    assert sum([buyer.quantityLeft for buyer in buyers_traded]) == 0 and sum([seller.quantityLeft for seller in sellers_traded])==0
