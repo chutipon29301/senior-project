@@ -15,3 +15,9 @@ services:
       - ./jupyter:/home/jovyan/work
     ports: 
       - 8888:8888
+  fabric.example.com:
+    volumes: 
+      - ./fabric-server:/server
+    command: sh -c 'cd /server && yarn && yarn start:dev'
+    ports: 
+      - 3000:3000

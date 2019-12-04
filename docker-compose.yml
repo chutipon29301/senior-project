@@ -4,3 +4,6 @@ services:
   smartcontract.example.com:
     container_name: smartcontract.example.com
     image: python:3
+  fabric.example.com:
+    container_name: fabric.example.com
+    image: node:10-alpine
