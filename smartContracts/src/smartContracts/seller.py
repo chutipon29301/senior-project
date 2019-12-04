@@ -7,9 +7,10 @@ class Seller:
     utilityIndex=0
     ssi=0;mti=0
     # default constructor 
-    def __init__(self,quantityAvailable,reservePrice,quantityLeft=quantityAvailable): 
+    def __init__(self,quantityAvailable,reservePrice,isGrid=False): 
         self.quantityAvailable = quantityAvailable
-        self.quantityLeft = quantityLeft
+        if(isGrid):self.quantityLeft = 0
+        else:self.quantityLeft = quantityAvailable
         self.reservePrice = reservePrice
         self.transaction=[]
         self.totalSoldPrice=0
