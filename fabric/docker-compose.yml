@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.7"
 
 services:
   # Orderer
@@ -15,9 +15,9 @@ services:
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer
     volumes:
-      - ./config/:/etc/hyperledger/configtx
-      - ./crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/:/etc/hyperledger/msp/orderer
-      - ./crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/:/etc/hyperledger/msp/peerBuilding
+      - ./fabric/config/:/etc/hyperledger/configtx
+      - ./fabric/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/:/etc/hyperledger/msp/orderer
+      - ./fabric/crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/:/etc/hyperledger/msp/peerBuilding
     networks:
       - basic
   # Organization1: Building
@@ -28,10 +28,10 @@ services:
       FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
       FABRIC_CA_SERVER_CA_NAME: ca.building.example.com
       FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.building.example.com-cert.pem
-      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/66c5757e482414b53bcf7cd705f0280a7185d376817d150f7efc3dd23989546e_sk
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/2ed52fa5dcc9d82c21b113c01c2010faa5fbe55a5716a01af596c9d21bf64284_sk
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./crypto-config/peerOrganizations/building.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./fabric/crypto-config/peerOrganizations/building.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
     networks:
       - basic
   # Organization - Building: peer 0
@@ -56,9 +56,9 @@ services:
     # command: peer node start --peer-chaincodedev=true
     volumes:
       - /var/run/:/host/var/run/
-      - ./crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/msp:/etc/hyperledger/msp/peer
-      - ./crypto-config/peerOrganizations/building.example.com/users:/etc/hyperledger/msp/users
-      - ./config:/etc/hyperledger/configtx
+      - ./fabric/crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/msp:/etc/hyperledger/msp/peer
+      - ./fabric/crypto-config/peerOrganizations/building.example.com/users:/etc/hyperledger/msp/users
+      - ./fabric/config:/etc/hyperledger/configtx
     depends_on:
       - orderer.example.com
       - couchdb.peer0.building.example.com
@@ -80,10 +80,10 @@ services:
       FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
       FABRIC_CA_SERVER_CA_NAME: ca.photovoltaic.example.com
       FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.photovoltaic.example.com-cert.pem
-      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/c030dad457c136d5b32fa03e77fd93d8adf088055ca02de0734080449b34f50d_sk
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/0a0ee21a70d9503223766658ce9e2b3b9299660e9de63eeff173a65eb406c8e6_sk
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./crypto-config/peerOrganizations/photovoltaic.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./fabric/crypto-config/peerOrganizations/photovoltaic.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
     networks:
       - basic
   # Organization - Photovoltaic: peer 0
@@ -108,9 +108,9 @@ services:
     # command: peer node start --peer-chaincodedev=true
     volumes:
       - /var/run/:/host/var/run/
-      - ./crypto-config/peerOrganizations/photovoltaic.example.com/peers/peer0.photovoltaic.example.com/msp:/etc/hyperledger/msp/peer
-      - ./crypto-config/peerOrganizations/photovoltaic.example.com/users:/etc/hyperledger/msp/users
-      - ./config:/etc/hyperledger/configtx
+      - ./fabric/crypto-config/peerOrganizations/photovoltaic.example.com/peers/peer0.photovoltaic.example.com/msp:/etc/hyperledger/msp/peer
+      - ./fabric/crypto-config/peerOrganizations/photovoltaic.example.com/users:/etc/hyperledger/msp/users
+      - ./fabric/config:/etc/hyperledger/configtx
     depends_on:
       - orderer.example.com
       - couchdb.peer0.photovoltaic.example.com
@@ -141,9 +141,7 @@ services:
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./../chaincode/:/opt/gopath/src/github.com/
-        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-    networks:
-        - basic
+        # - ./../chaincode/:/opt/gopath/src/github.com/
+        - ./fabric/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
 networks:
   basic:
