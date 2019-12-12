@@ -5,9 +5,10 @@ import { SmartContractsModule } from './smart-contracts/smart-contracts.module';
 import { BuyerModule } from './buyer/buyer.module';
 import { SellerModule } from './seller/seller.module';
 import { ConfigModule } from './config/config.module';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
-  imports: [SmartContractsModule, BuyerModule, SellerModule, ConfigModule],
+  imports: [SmartContractsModule, BuyerModule, SellerModule, ConfigModule, ChannelModule],
   controllers: [AppController],
   providers: [AppService],
 })
