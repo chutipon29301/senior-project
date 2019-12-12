@@ -2,10 +2,12 @@ version: '3.7'
 
 services: 
   smartcontract.example.com:
-    working_dir: /home/smartcontract
     volumes: 
-      - ./smartContracts:/home/smartcontract
-    command: sh -c './startDev.sh'
+      - ./smart-contracts:/home/smartcontract
+    command: flask run --host 0.0.0.0
+    environment: 
+      FLASK_APP: src/app.py
+      FLASK_DEBUG: 1
     ports: 
       - 5000:5000
   jupyter.example.com:

@@ -1,3 +1,5 @@
 # Smartcontracts
+
 Activate env
-# pytest --pyargs src
+
+` pytest --pyargs src `
