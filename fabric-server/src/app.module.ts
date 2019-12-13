@@ -6,9 +6,10 @@ import { BuyerModule } from './buyer/buyer.module';
 import { SellerModule } from './seller/seller.module';
 import { ConfigModule } from './config/config.module';
 import { ChannelModule } from './channel/channel.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
-  imports: [SmartContractsModule, BuyerModule, SellerModule, ConfigModule, ChannelModule],
+  imports: [SmartContractsModule, BuyerModule, SellerModule, ConfigModule, ChannelModule, ClientModule],
   controllers: [AppController],
   providers: [AppService],
 })
