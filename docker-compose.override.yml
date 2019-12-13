@@ -19,7 +19,7 @@ services:
       - 8888:8888
   fabric.example.com:
     volumes: 
-      - ./fabric-server:/server
-    command: sh -c 'cd /server && yarn && yarn start:dev'
+      - ./fabric-server:/home/server
+    command: sh -c 'cd /home/server && yarn && yarn start:dev'
     ports: 
       - 3000:3000
