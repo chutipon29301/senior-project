@@ -6,6 +6,6 @@ services:
     build: ./smart-contracts
   fabric.example.com:
     container_name: fabric.example.com
-    image: node:10-alpine
+    build: ./fabric-server
     environment: 
       SMART_CONTRACT_API_URL: smartcontract.example.com:5000
