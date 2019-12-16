@@ -20,6 +20,7 @@ services:
   fabric.example.com:
     volumes: 
       - ./fabric-server:/home/server
+      - ./fabric:/home/fabric
     command: sh -c 'cd /home/server && yarn && yarn start:dev'
     ports: 
       - 3000:3000
