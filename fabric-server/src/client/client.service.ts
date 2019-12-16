@@ -19,7 +19,6 @@ export class ClientService {
         // channelName: mychannel
         // channelConfigPath: /home/fabric/config/channel.tx
         // orgName: Org1
-
     }
 
 }
