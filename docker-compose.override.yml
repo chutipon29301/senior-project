@@ -21,6 +21,6 @@ services:
     volumes: 
       - ./fabric-server:/home/server
       - ./fabric:/home/fabric
-    command: sh -c 'cd /home/server && yarn && yarn start:dev'
+    command: sh -c 'cd /home/server && yarn && yarn start:nodemon'
     ports: 
       - 3000:3000
