@@ -14,15 +14,15 @@ services:
       FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
       FABRIC_CA_SERVER_CA_NAME: ca-org1
       FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
-      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/30ce627690e2aaafa30ded523c4d666701aba118dc20551f0708306f2fa872c7_sk
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/9dc581564d194a74bf027de9a61d2fff012aa5f4909adeb4cc7077a3ada4cb01_sk
       FABRIC_CA_SERVER_TLS_ENABLED: 'true'
       FABRIC_CA_SERVER_TLS_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
-      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/30ce627690e2aaafa30ded523c4d666701aba118dc20551f0708306f2fa872c7_sk
+      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/9dc581564d194a74bf027de9a61d2fff012aa5f4909adeb4cc7077a3ada4cb01_sk
     ports:
       - 7054:7054
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./fabric/crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./fabric/crypto-config/peerOrganizations/org1.example.com/ca:/etc/hyperledger/fabric-ca-server-config
 
   ca.org2.example.com:
     container_name: ca.org2.example.com
@@ -31,15 +31,15 @@ services:
       FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
       FABRIC_CA_SERVER_CA_NAME: ca-org2
       FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem
-      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/e762631a6fcef1e0b6110012c0d48b80b69e04904423005c96c1a11e5b158553_sk
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/24f053c0a8a150cb1a873ce2f457549de420247cbc6c8f8abfef64ef14361658_sk
       FABRIC_CA_SERVER_TLS_ENABLED: 'true'
       FABRIC_CA_SERVER_TLS_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem
-      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/e762631a6fcef1e0b6110012c0d48b80b69e04904423005c96c1a11e5b158553_sk
+      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/24f053c0a8a150cb1a873ce2f457549de420247cbc6c8f8abfef64ef14361658_sk    
     ports:
       - 8054:7054
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
-      - ./fabric/crypto-config/peerOrganizations/org2.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./fabric/crypto-config/peerOrganizations/org2.example.com/ca:/etc/hyperledger/fabric-ca-server-config
 
   orderer.example.com:
     container_name: orderer.example.com
@@ -92,7 +92,7 @@ services:
       - 7053:7053
     volumes:
       - /var/run/:/host/var/run/
-      - ./fabric/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/:/etc/hyperledger/crypto/peer
+      - ./fabric/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
 
@@ -123,7 +123,7 @@ services:
       - 7058:7053
     volumes:
       - /var/run/:/host/var/run/
-      - ./fabric/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/:/etc/hyperledger/crypto/peer
+      - ./fabric/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
 
@@ -154,7 +154,7 @@ services:
       - 8053:7053
     volumes:
       - /var/run/:/host/var/run/
-      - ./fabric/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/:/etc/hyperledger/crypto/peer
+      - ./fabric/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
 
@@ -185,6 +185,6 @@ services:
       - 8058:7053
     volumes:
       - /var/run/:/host/var/run/
-      - ./fabric/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/:/etc/hyperledger/crypto/peer
+      - ./fabric/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
