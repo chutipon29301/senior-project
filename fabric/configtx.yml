@@ -129,7 +129,6 @@ Orderer: &OrdererDefaults
 #
 ################################################################################
 Profiles:
-
     TwoOrgsOrdererGenesis:
         Orderer:
             <<: *OrdererDefaults
