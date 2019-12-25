@@ -5,6 +5,7 @@ import * as Client from 'fabric-client';
 export class ClientService {
 
     public async getClientForOrg(userOrg: string, username?: string): Promise<Client> {
+        console.log(`getClientForOrg - ****** START ${userOrg} ${username}`)
         const client = Client.loadFromConfig('/home/server/artifacts/network-config.yaml');
         client.loadFromConfig(`/home/server/artifacts/${userOrg.toLowerCase()}.yaml`);
         await client.initCredentialStores();
