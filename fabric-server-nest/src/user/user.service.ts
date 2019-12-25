@@ -31,17 +31,21 @@ export class UserService {
     public async getRegisteredUser(username: string, userOrg: string, isJson: boolean): Promise<Response> {
         try {
             const client = await this.clientService.getClientForOrg(userOrg);
+            console.log('Successfully initialized the credential stores');
             let user = await client.getUserContext(username, true);
             if (user && user.isEnrolled()) {
                 console.log('Successfully loaded member from persistence');
             } else {
+                console.log(`User ${username} was not enrolled, so we will need an admin user object to register`);
                 const adminUserObj = await client.setUserContext({ username: 'admin', password: 'adminpw' });
                 const caClient = client.getCertificateAuthority();
                 const secret = await caClient.register({
                     enrollmentID: username,
                     affiliation: userOrg.toLowerCase() + '.department1',
                 }, adminUserObj);
+                console.log(`Successfully got the secret for user ${username}`);
                 user = await client.setUserContext({ username, password: secret });
+                console.log(`Successfully enrolled username ${username}  and setUserContext on the client object`);
             }
             if (user && user.isEnrolled) {
                 if (isJson && isJson === true) {
