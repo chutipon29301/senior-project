@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { CreateChannelDto } from './channel.dto';
+import { CreateChannelDto, JoinChannelDto } from './channel.dto';
 
 @Controller('channel')
 export class ChannelController {
@@ -10,5 +10,10 @@ export class ChannelController {
     @Post()
     public async createChannel(@Body() body: CreateChannelDto) {
         return this.channelService.createChannel(body.channelName, body.username, body.orgName);
+    }
+
+    @Post('join')
+    public async joinChannel(@Body() body: JoinChannelDto) {
+        return this.channelService.joinChannel(body.channelName, body.peers, body.username, body.orgName);
     }
 }

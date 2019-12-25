@@ -64,5 +64,81 @@ export class ChannelService {
             throw new BadRequestException('Failed to initialize the channel: ' + err.toString());
         }
     }
-    public async joinChannel()
+    public async joinChannel(channelName: string, peers: string[], username: string, orgName: string) {
+        console.log('\n\n============ Join Channel start ============\n')
+        let errorMessage = null;
+        let allEventHubs = [];
+        try {
+            console.log(`Calling peers in organization '${orgName}' to join the channel`);
+            // first setup the client for this org
+            const client = await this.clientService.getClientForOrg(orgName, username);
+            console.log(`Successfully got the fabric client for the organization '${orgName}'`);
+            const channel = client.getChannel(channelName);
+            if (!channel) {
+                const message = `Channel ${channelName} was not defined in the connection profile`;
+                console.log(message);
+                throw new BadRequestException(message);
+            }
+            // next step is to get the genesis_block from the orderer,
+            // the starting point for the channel that we want to join
+            const request = {
+                txId: client.newTransactionID(true), // get an admin based transactionID
+            };
+            const genesisBlock = await channel.getGenesisBlock(request);
+            // tell each peer to join and wait 10 seconds
+            // for the channel to be created on each peer
+            const promises = [];
+            promises.push(new Promise(resolve => setTimeout(resolve, 10000)));
+            const joinRequest = {
+                targets: peers, // using the peer names which only is allowed when a connection profile is loaded
+                txId: client.newTransactionID(true), // get an admin based transactionID
+                block: genesisBlock,
+            };
+            const joinPromise = channel.joinChannel(joinRequest);
+            promises.push(joinPromise);
+            const results = await Promise.all(promises);
+            console.log('Join Channel R E S P O N S E : %j', results);
+            // lets check the results of sending to the peers which is
+            // last in the results array
+            const peersResults = results.pop();
+            // then each peer results
+            peersResults.forEach(result => {
+                const peerResult = result;
+                if (peerResult instanceof Error) {
+                    errorMessage = `Failed to join peer to the channel with error :: ${peerResult.toString()}`;
+                    console.log(errorMessage);
+                } else if (peerResult.response && peerResult.response.status == 200) {
+                    console.log(`Successfully joined peer to the channel ${channelName}`);
+                } else {
+                    errorMessage = `Failed to join peer to the channel ${channelName}`;
+                    console.log(errorMessage);
+                }
+            });
+        } catch (error) {
+            console.log(`Failed to join channel due to error: ${error.stack ? error.stack : error}`);
+            errorMessage = error.toString();
+        }
+        // need to shutdown open event streams
+        allEventHubs.forEach(o => o.disconnect());
+
+        if (!errorMessage) {
+            const message = `Successfully joined peers in organization ${orgName} to the channel:${channelName}`;
+            console.log(message);
+            // build a response to send back to the REST caller
+            const response = {
+                success: true,
+                message,
+            };
+            return response;
+        } else {
+            const message = `Failed to join all peers to channel.cause: ${errorMessage}`;
+            console.log(message);
+            // build a response to send back to the REST caller
+            const response = {
+                success: false,
+                message,
+            };
+            return response;
+        }
+    }
 }
