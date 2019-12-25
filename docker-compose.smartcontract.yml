@@ -1,7 +1,9 @@
 version: '3.7'
 
-services: 
+services:
   smartcontract.example.com:
+    container_name: smartcontract.example.com
+    build: ./smart-contracts
     volumes: 
       - ./smart-contracts:/home/smartcontract
     command: flask run --host 0.0.0.0
