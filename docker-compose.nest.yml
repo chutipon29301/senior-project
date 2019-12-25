@@ -8,5 +8,7 @@ services:
     volumes: 
       - ./fabric-server-nest:/home/server
     command: sh -c 'yarn && yarn start:nodemon'
+    environment: 
+      GOPATH: /home/server/artifacts
     ports: 
       - 3000:3000
