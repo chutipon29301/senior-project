@@ -1,19 +1,25 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import { ClientService } from '../client/client.service';
 import { readFileSync } from 'fs';
 import { ChannelRequest } from 'fabric-client';
 import { join } from 'path';
+import { WINSTON } from '../constant';
+import { Logger } from 'winston';
+
 @Injectable()
 export class ChannelService {
 
-    constructor(private readonly clientService: ClientService) { }
+    constructor(
+        @Inject(WINSTON) private readonly logger: Logger,
+        private readonly clientService: ClientService,
+    ) { }
 
     public async createChannel(channelName: string, username: string, orgName: string) {
-        console.log(`\n====== Creating Channel '${channelName}' ======\n`);
+        this.logger.debug(`\n====== Creating Channel '${channelName}' ======\n`);
         try {
             // first setup the client for this org
             const client = await this.clientService.getClientForOrg(orgName);
-            console.log(`Successfully got the fabric client for the organization ${orgName}`);
+            this.logger.debug(`Successfully got the fabric client for the organization ${orgName}`);
 
             // read in the envelope for the channel config raw bytes
             const envelope = readFileSync('/home/server/artifacts/channel/mychannel.tx');
@@ -35,17 +41,17 @@ export class ChannelService {
 
             // send to orderer
             const result = await client.createChannel(request as ChannelRequest);
-            console.log(`result ::${result}`);
+            this.logger.debug(`result ::${result}`);
             if (result) {
                 if (result.status === 'SUCCESS') {
-                    console.log('Successfully created the channel.');
+                    this.logger.debug('Successfully created the channel.');
                     const response = {
                         success: true,
                         message: `Channel '${channelName}' created Successfully`,
                     };
                     return response;
                 } else {
-                    console.log(`Failed to create the channel. status: ${result.status} reason:${result.info}`);
+                    this.logger.debug(`Failed to create the channel. status: ${result.status} reason:${result.info}`);
                     const response = {
                         success: false,
                         message: `Channel '${channelName}' failed to create status: ${result.status} reason:${result.info}`,
@@ -53,7 +59,7 @@ export class ChannelService {
                     return response;
                 }
             } else {
-                console.log(`\n!!!!!!!!! Failed to create the channel '${channelName}' !!!!!!!!!\n\n`);
+                this.logger.debug(`\n!!!!!!!!! Failed to create the channel '${channelName}' !!!!!!!!!\n\n`);
                 const response = {
                     success: false,
                     message: `Failed to create the channel '${channelName}'`,
@@ -61,23 +67,23 @@ export class ChannelService {
                 return response;
             }
         } catch (err) {
-            console.log(`Failed to initialize the channel: ${err.stack ? err.stack : err}`);
+            this.logger.debug(`Failed to initialize the channel: ${err.stack ? err.stack : err}`);
             throw new BadRequestException('Failed to initialize the channel: ' + err.toString());
         }
     }
     public async joinChannel(channelName: string, peers: string[], username: string, orgName: string) {
-        console.log('\n\n============ Join Channel start ============\n')
+        this.logger.debug('\n\n============ Join Channel start ============\n')
         let errorMessage = null;
-        let allEventHubs = [];
+        const allEventHubs = [];
         try {
-            console.log(`Calling peers in organization '${orgName}' to join the channel`);
+            this.logger.debug(`Calling peers in organization '${orgName}' to join the channel`);
             // first setup the client for this org
             const client = await this.clientService.getClientForOrg(orgName, username);
-            console.log(`Successfully got the fabric client for the organization '${orgName}'`);
+            this.logger.debug(`Successfully got the fabric client for the organization '${orgName}'`);
             const channel = client.getChannel(channelName);
             if (!channel) {
                 const message = `Channel ${channelName} was not defined in the connection profile`;
-                console.log(message);
+                this.logger.debug(message);
                 throw new BadRequestException(message);
             }
             // next step is to get the genesis_block from the orderer,
@@ -98,7 +104,7 @@ export class ChannelService {
             const joinPromise = channel.joinChannel(joinRequest);
             promises.push(joinPromise);
             const results = await Promise.all(promises);
-            console.log('Join Channel R E S P O N S E : %j', results);
+            this.logger.debug('Join Channel R E S P O N S E : %j', results);
             // lets check the results of sending to the peers which is
             // last in the results array
             const peersResults = results.pop();
@@ -107,16 +113,16 @@ export class ChannelService {
                 const peerResult = result;
                 if (peerResult instanceof Error) {
                     errorMessage = `Failed to join peer to the channel with error :: ${peerResult.toString()}`;
-                    console.log(errorMessage);
+                    this.logger.debug(errorMessage);
                 } else if (peerResult.response && peerResult.response.status == 200) {
-                    console.log(`Successfully joined peer to the channel ${channelName}`);
+                    this.logger.debug(`Successfully joined peer to the channel ${channelName}`);
                 } else {
                     errorMessage = `Failed to join peer to the channel ${channelName}`;
-                    console.log(errorMessage);
+                    this.logger.debug(errorMessage);
                 }
             });
         } catch (error) {
-            console.log(`Failed to join channel due to error: ${error.stack ? error.stack : error}`);
+            this.logger.debug(`Failed to join channel due to error: ${error.stack ? error.stack : error}`);
             errorMessage = error.toString();
         }
         // need to shutdown open event streams
@@ -124,7 +130,7 @@ export class ChannelService {
 
         if (!errorMessage) {
             const message = `Successfully joined peers in organization ${orgName} to the channel:${channelName}`;
-            console.log(message);
+            this.logger.debug(message);
             // build a response to send back to the REST caller
             const response = {
                 success: true,
@@ -133,7 +139,7 @@ export class ChannelService {
             return response;
         } else {
             const message = `Failed to join all peers to channel.cause: ${errorMessage}`;
-            console.log(message);
+            this.logger.debug(message);
             // build a response to send back to the REST caller
             const response = {
                 success: false,
@@ -144,16 +150,16 @@ export class ChannelService {
     }
 
     public async updateAnchorPeers(channelName: string, configUpdatePath: string, username: string, orgName: string) {
-        console.log(`\n====== Updating Anchor Peers on '${channelName}' ======\n`);
+        this.logger.debug(`\n====== Updating Anchor Peers on '${channelName}' ======\n`);
         let errorMessage = null;
         try {
             // first setup the client for this org
             const client = await this.clientService.getClientForOrg(orgName, username);
-            console.log(`Successfully got the fabric client for the organization '${orgName}'`);
+            this.logger.debug(`Successfully got the fabric client for the organization '${orgName}'`);
             const channel = client.getChannel(channelName);
             if (!channel) {
                 const message = `Channel ${channelName} was not defined in the connection profile`;
-                console.error(message);
+                this.logger.error(message);
                 throw new Error(message);
             }
 
@@ -177,22 +183,22 @@ export class ChannelService {
 
             const promises = [];
             const eventHubs = channel.getChannelEventHubsForOrg();
-            console.log(`found ${eventHubs.length} eventhubs for this organization ${orgName}`);
+            this.logger.debug(`found ${eventHubs.length} eventhubs for this organization ${orgName}`);
             eventHubs.forEach((eh) => {
                 const anchorUpdateEventPromise = new Promise((resolve, reject) => {
-                    console.log('anchorUpdateEventPromise - setting up event');
+                    this.logger.debug('anchorUpdateEventPromise - setting up event');
                     const eventTimeout = setTimeout(() => {
                         const message = 'REQUEST_TIMEOUT:' + eh.getPeerAddr();
-                        console.log(message);
+                        this.logger.debug(message);
                         eh.disconnect();
                     }, 60000);
                     eh.registerBlockEvent((block) => {
-                        console.log(`The config update has been committed on peer ${eh.getPeerAddr()}`);
+                        this.logger.debug(`The config update has been committed on peer ${eh.getPeerAddr()}`);
                         clearTimeout(eventTimeout);
                         resolve();
                     }, (err) => {
                         clearTimeout(eventTimeout);
-                        console.log(err);
+                        this.logger.debug(err);
                         reject(err);
                     },
                         // the default for 'unregister' is true for block listeners
@@ -211,29 +217,29 @@ export class ChannelService {
             // are ready for the orderering and committing
             promises.push(sendPromise);
             const results = await Promise.all(promises);
-            console.log(`------->>> R E S P O N S E :${results}`);
+            this.logger.debug(`------->>> R E S P O N S E :${results}`);
             const response = results.pop(); //  orderer results are last in the results
 
             if (response) {
                 if (response.status === 'SUCCESS') {
-                    console.log(`Successfully update anchor peers to the channel ${channelName}`);
+                    this.logger.debug(`Successfully update anchor peers to the channel ${channelName}`);
                 } else {
                     errorMessage = `Failed to update anchor peers to the channel
                     ${channelName} with status: ${response.status} reason: ${response.info}`;
-                    console.log(errorMessage);
+                    this.logger.debug(errorMessage);
                 }
             } else {
                 errorMessage = `Failed to update anchor peers to the channel ${channelName}`;
-                console.log(errorMessage);
+                this.logger.debug(errorMessage);
             }
         } catch (error) {
-            console.error(error.toString());
+            this.logger.error(error.toString());
             throw new BadRequestException('Failed to update anchor peers due to error: ' + error.stack ? error.stack : error);
         }
 
         if (!errorMessage) {
             const message = `Successfully update anchor peers in organization ${orgName} to the channel ${channelName}`;
-            console.log(message);
+            this.logger.debug(message);
             const response = {
                 success: true,
                 message,
@@ -241,7 +247,7 @@ export class ChannelService {
             return response;
         } else {
             const message = `Failed to update anchor peers. cause:${errorMessage}`;
-            console.log(message);
+            this.logger.debug(message);
             const response = {
                 success: false,
                 message,
@@ -249,5 +255,29 @@ export class ChannelService {
             return response;
         }
 
+    }
+
+    public async getChannels(peer: string, username: string, orgName: string) {
+        try {
+            // first setup the client for this org
+            const client = await this.clientService.getClientForOrg(orgName, username);
+            this.logger.debug('Successfully got the fabric client for the organization "%s"', orgName);
+            const response = await client.queryChannels(peer);
+            if (response) {
+                this.logger.debug('<<< channels >>>');
+                let channelNames = [];
+                for (let i = 0; i < response.channels.length; i++) {
+                    channelNames.push('channel id: ' + response.channels[i].channel_id);
+                }
+                this.logger.debug(channelNames);
+                return response;
+            } else {
+                this.logger.error('response_payloads is null');
+                return 'response_payloads is null';
+            }
+        } catch(error) {
+            this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
+            return error.toString();
+        }
     }
 }

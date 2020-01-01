@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Query } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, JoinChannelDto, UpdateAnchorPeersDto } from './channel.dto';
 
@@ -21,4 +21,10 @@ export class ChannelController {
     public async updateAnchorPeers(@Param('channelName') channelName: string, @Body() body: UpdateAnchorPeersDto) {
         return this.channelService.updateAnchorPeers(channelName, body.configUpdatePath, body.username, body.orgName);
     }
+
+    @Get()
+    public async listPeerChannel(@Query('peer') peer: string, @Query('username') username: string, @Query('orgName') orgName: string) {
+        return this.channelService.getChannels(peer, username, orgName)
+    }
+
 }
