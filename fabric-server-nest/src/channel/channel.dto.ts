@@ -1,9 +1,15 @@
 import { IsString, IsArray } from 'class-validator';
 
 export class CreateChannelDto {
+
+    @IsString()
     channelName: string;
+
+    @IsString()
     username: string;
-    orgName: string;
+
+    @IsString()
+    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -19,7 +25,7 @@ export class JoinChannelDto {
     username: string;
 
     @IsString()
-    orgName: string;
+    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -32,5 +38,5 @@ export class UpdateAnchorPeersDto {
     username: string;
 
     @IsString()
-    orgName: string;
+    organizationName: string;
 }

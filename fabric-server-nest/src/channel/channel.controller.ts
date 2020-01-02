@@ -8,23 +8,26 @@ export class ChannelController {
     constructor(private readonly channelService: ChannelService) { }
 
     @Post()
-    public async createChannel(@Body() body: CreateChannelDto) {
-        return this.channelService.createChannel(body.channelName, body.username, body.orgName);
+    public async createChannel(@Body() { channelName, username, organizationName }: CreateChannelDto) {
+        return this.channelService.createChannel(channelName, username, organizationName);
     }
 
     @Post('join')
-    public async joinChannel(@Body() body: JoinChannelDto) {
-        return this.channelService.joinChannel(body.channelName, body.peers, body.username, body.orgName);
+    public async joinChannel(@Body() { channelName, peers, username, organizationName }: JoinChannelDto) {
+        return this.channelService.joinChannel(channelName, peers, username, organizationName);
     }
 
     @Post(':channelName/anchorPeers')
-    public async updateAnchorPeers(@Param('channelName') channelName: string, @Body() body: UpdateAnchorPeersDto) {
-        return this.channelService.updateAnchorPeers(channelName, body.configUpdatePath, body.username, body.orgName);
+    public async updateAnchorPeers(
+        @Param('channelName') channelName: string,
+        @Body() { configUpdatePath, username, organizationName }: UpdateAnchorPeersDto,
+    ) {
+        return this.channelService.updateAnchorPeers(channelName, configUpdatePath, username, organizationName);
     }
 
-    @Get()
-    public async listPeerChannel(@Query('peer') peer: string, @Query('username') username: string, @Query('orgName') orgName: string) {
-        return this.channelService.getChannels(peer, username, orgName)
-    }
+    // @Get()
+    // public async listPeerChannel(@Query('peer') peer: string, @Query('username') username: string, @Query('orgName') orgName: string) {
+    //     return this.channelService.getChannels(peer, username, orgName)
+    // }
 
 }
