@@ -117,7 +117,7 @@ curl -s -X POST \
   -d '{
       "username":"Jim",
 	    "organizationName":"Org1",
-	    "args":["a","100","b","200"]
+	    "args":[]
   }'
 echo
 echo
@@ -131,8 +131,8 @@ curl -s -X POST \
       "username":"Jim",
       "organizationName":"Org1",
       "peers": ["peer0.org1.example.com","peer0.org2.example.com"],
-      "fcn":"move",
-      "args":["a","b","10"]
+      "fcn":"createRound",
+      "args":["id_test"]
   }'
 echo
 
@@ -140,7 +140,7 @@ echo
 echo "GET query chaincode on peer1 of Org1"
 echo
 curl -s -X GET \
-  "http://localhost:3000/chaincode/onPeer/mychannel/mycc?peer=peer0.org1.example.com&fcn=query&args=%5B%22a%22%5D&username=Jim&orgName=Org1" \
+  "http://localhost:3000/chaincode/onPeer/mychannel/mycc?peer=peer0.org1.example.com&fcn=getRound&args=%5B%22id_test%22%5D&username=Jim&orgName=Org1" \
   -H "content-type: application/json"
 echo
 echo
