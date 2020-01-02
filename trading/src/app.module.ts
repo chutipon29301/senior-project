@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from './config/config.service';
+import { BuildingModule } from './building/building.module';
+import { SellerModule } from './seller/seller.module';
+import { RoundModule } from './round/round.module';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({
@@ -19,7 +22,7 @@ import { ConfigService } from './config/config.service';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-  }), ConfigModule],
+  }), ConfigModule, BuildingModule, SellerModule, RoundModule],
   controllers: [AppController],
   providers: [AppService],
 })
