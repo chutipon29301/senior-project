@@ -19,6 +19,9 @@ export default class Round {
     @Column('float')
     marketPrice: number;
 
+    @Column()
+    isActive: boolean;
+
     @OneToMany(_ => SellerTransaction, sellerTransaction => sellerTransaction.round)
     sellerTransactions: SellerTransaction[];
 
