@@ -9,7 +9,7 @@ export class InstallChaincodeDto {
     username: string;
 
     @IsString()
-    orgName: string;
+    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -30,7 +30,7 @@ export class InstantiateChaincodeDto {
     username: string;
 
     @IsString()
-    orgName: string;
+    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -49,7 +49,7 @@ export class InvokeChaincodeDto {
     username: string;
 
     @IsString()
-    orgName: string;
+    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
