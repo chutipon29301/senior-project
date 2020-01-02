@@ -41,7 +41,7 @@ export class ChaincodeService {
         functionName: string,
         args: string[],
         username: string,
-        organizationName: string
+        organizationName: string,
     ) {
         this.logger.info(`============ Instantiate chaincode on channel ${channelName} ============`);
         const client = await this.clientService.getClientForOrg(organizationName, username);
@@ -73,7 +73,7 @@ export class ChaincodeService {
                 },
             },
             'fcn': functionName,
-        }, 60000);
+        }, 180000);
         const allGood = proposalResponses
             .map((proposalResponse: ProposalResponse) => proposalResponse.response && proposalResponse.response.status === 200)
             .reduce((previous, current) => previous && current);
@@ -246,7 +246,8 @@ export class ChaincodeService {
             fcn,
             args,
         });
-        return JSON.stringify(responsePayloads);
+        this.logger.info(responsePayloads.map(o => o.toString()));
+        return responsePayloads.toString();
     }
     // public async queryChaincode(
     //     peer: string,
