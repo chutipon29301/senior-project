@@ -1,14 +1,32 @@
-version: '3.7'
+version: "3.7"
 
 services:
   fabric.example.com:
     container_name: fabric.example.com
     working_dir: /home/server
     image: node:8
-    volumes: 
+    volumes:
       - ./fabric-server-nest:/home/server
     command: sh -c 'yarn && yarn start:nodemon'
-    environment: 
+    environment:
       GOPATH: /home/server/artifacts
-    ports: 
+      MYSQL_URL: mysql.example.com
+      MYSQL_DATABASE: fabric
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_PORT: 3306
+      SMARTCONTRACT_URL: smartcontract.example.com
+    ports:
       - 3000:3000
+  mysql.example.com:
+    image: mysql:5.7
+    container_name: mysql.example.com
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: fabric
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password

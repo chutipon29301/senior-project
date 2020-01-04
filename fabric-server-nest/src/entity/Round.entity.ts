@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { SellerTransaction } from './SellerTransaction.entity';
-import { BuyerTransaction } from './BuyerTransaction.entity';
+import { SellTransaction } from './SellTransaction.entity';
+import { BuyTransaction } from './BuyTransaction.entity';
 
 @Entity()
 export default class Round {
@@ -22,9 +22,9 @@ export default class Round {
     @Column()
     isActive: boolean;
 
-    @OneToMany(_ => SellerTransaction, sellerTransaction => sellerTransaction.round)
-    sellerTransactions: SellerTransaction[];
+    @OneToMany(_ => SellTransaction, sellerTransaction => sellerTransaction.round)
+    sellTransactions: SellTransaction[];
 
-    @OneToMany(_ => BuyerTransaction, buyerTransaction => buyerTransaction.round)
-    buyerTransactions: BuyerTransaction[];
+    @OneToMany(_ => BuyTransaction, buyerTransaction => buyerTransaction.round)
+    buyTransactions: BuyTransaction[];
 }

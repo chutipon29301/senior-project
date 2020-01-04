@@ -1,9 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import Round from './Round.entity';
-import Building from './Building.entity';
+import User from './User.entity';
 
 @Entity()
-export class BuyerTransaction {
+export class BuyTransaction {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -13,9 +13,9 @@ export class BuyerTransaction {
     @Column('float')
     boughtPrice: number;
 
-    @ManyToOne(_ => Building, building => building.transactions)
-    building: Building;
+    @ManyToOne(_ => User, user => user.buyTransactions)
+    user: User;
 
-    @ManyToOne(_ => Round, round => round.buyerTransactions)
+    @ManyToOne(_ => Round, round => round.buyTransactions)
     round: Round;
 }
