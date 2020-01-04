@@ -25,9 +25,4 @@ export class ChannelController {
         return this.channelService.updateAnchorPeers(channelName, configUpdatePath, username, organizationName);
     }
 
-    // @Get()
-    // public async listPeerChannel(@Query('peer') peer: string, @Query('username') username: string, @Query('orgName') orgName: string) {
-    //     return this.channelService.getChannels(peer, username, orgName)
-    // }
-
 }
