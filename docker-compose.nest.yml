@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  fabric-nest.example.com:
-    container_name: fabric-nest.example.com
+  fabric.example.com:
+    container_name: fabric.example.com
     working_dir: /home/server
     image: node:8
     volumes: 
