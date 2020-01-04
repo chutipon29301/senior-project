@@ -1,10 +1,8 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { ClientService } from '../client/client.service';
-import { ChaincodeInstallRequest, ProposalErrorResponse, ProposalResponse, BroadcastResponse, ChaincodeInvokeRequest } from 'fabric-client';
+import { ProposalResponse, BroadcastResponse, ChaincodeInvokeRequest } from 'fabric-client';
 import { WINSTON } from '../constant';
 import { Logger } from 'winston';
-import { format } from 'util';
-import { Response } from './chaincode.dto';
 
 @Injectable()
 export class ChaincodeService {
@@ -113,7 +111,7 @@ export class ChaincodeService {
                                 // so no real need to set here, however for 'disconnect'
                                 // the default is false as most event hubs are long running
                                 // in this use case we are using it only once
-                                { unregister: true, disconnect: true }
+                                { unregister: true, disconnect: true },
                             );
                             eventHub.connect();
                         });
@@ -207,7 +205,7 @@ export class ChaincodeService {
                             // so no real need to set here, however for 'disconnect'
                             // the default is false as most event hubs are long running
                             // in this use case we are using it only once
-                            { unregister: true, disconnect: true }
+                            { unregister: true, disconnect: true },
                         );
                         eventHub.connect();
                     });
@@ -241,7 +239,7 @@ export class ChaincodeService {
             throw new BadRequestException('Channel not found');
         }
         const responsePayloads = await channel.queryByChaincode({
-            targets: [peer], //queryByChaincode allows for multiple targets
+            targets: [peer], // queryByChaincode allows for multiple targets
             chaincodeId: chaincodeName,
             fcn,
             args,
@@ -249,222 +247,4 @@ export class ChaincodeService {
         this.logger.info(responsePayloads.map(o => o.toString()));
         return responsePayloads.toString();
     }
-    // public async queryChaincode(
-    //     peer: string,
-    //     channelName: string,
-    //     chaincodeName: string,
-    //     args: string[],
-    //     fcn: string,
-    //     username: string,
-    //     orgName: string): Promise<string> {
-    //     let client = null;
-    //     let channel = null;
-    //     try {
-    //         // first setup the client for this org
-    //         client = await this.clientService.getClientForOrg(orgName, username);
-    //         this.logger.debug('Successfully got the fabric client for the organization "%s"', orgName);
-    //         channel = client.getChannel(channelName);
-    //         if (!channel) {
-    //             let message = format('Channel %s was not defined in the connection profile', channelName);
-    //             this.logger.error(message);
-    //             throw new Error(message);
-    //         }
-
-    //         // send query
-    //         const request = {
-    //             targets: [peer], //queryByChaincode allows for multiple targets
-    //             chaincodeId: chaincodeName,
-    //             fcn,
-    //             args,
-    //         };
-    //         const responsePayloads = await channel.queryByChaincode(request);
-    //         if (responsePayloads) {
-    //             for (let i = 0; i < responsePayloads.length; i++) {
-    //                 this.logger.info(args[0] + ' now has ' + responsePayloads[i].toString('utf8') +
-    //                     ' after the move');
-    //             }
-    //             return args[0] + ' now has ' + responsePayloads[0].toString('utf8') +
-    //                 ' after the move';
-    //         } else {
-    //             this.logger.error('responsePayloads is null');
-    //             return 'responsePayloads is null';
-    //         }
-    //     } catch (error) {
-    //         this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
-    //         return error.toString();
-    //     } finally {
-    //         if (channel) {
-    //             channel.close();
-    //         }
-    //     }
-    // }
-    // public async getBlockByNumber(
-    //     peer: string,
-    //     channelName: string,
-    //     blockNumber: number,
-    //     username: string,
-    //     orgName: string): Promise<any> {
-    //     try {
-    //         // first setup the client for this org
-    //         const client = await this.clientService.getClientForOrg(orgName, username);
-    //         this.logger.debug('Successfully got the fabric client for the organization "%s"', orgName);
-    //         const channel = client.getChannel(channelName);
-    //         if (!channel) {
-    //             let message = format('Channel %s was not defined in the connection profile', channelName);
-    //             this.logger.error(message);
-    //             throw new Error(message);
-    //         }
-
-    //         const responsePayload = await channel.queryBlock(parseInt(`${blockNumber}`, +peer));
-    //         if (responsePayload) {
-    //             this.logger.debug(responsePayload);
-    //             return responsePayload;
-    //         } else {
-    //             this.logger.error('responsePayload is null');
-    //             return 'responsePayload is null';
-    //         }
-    //     } catch (error) {
-    //         this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
-    //         return error.toString();
-    //     }
-    // }
-    // public async getTransactionByID(
-    //     peer: string,
-    //     channelName: string,
-    //     trxnID: string,
-    //     username: string,
-    //     orgName: string): Promise<any> {
-    //     try {
-    //         // first setup the client for this org
-    //         const client = await this.clientService.getClientForOrg(orgName, username);
-    //         this.logger.info('Successfully got the fabric client for the organization "%s"', orgName);
-    //         const channel = client.getChannel(channelName);
-    //         if (!channel) {
-    //             let message = format('Channel %s was not defined in the connection profile', channelName);
-    //             this.logger.error(message);
-    //             throw new Error(message);
-    //         }
-    //         const responsePayload = await channel.queryTransaction(trxnID, peer);
-    //         if (responsePayload) {
-    //             this.logger.info(responsePayload);
-    //             return responsePayload;
-    //         } else {
-    //             this.logger.error('responsePayload is null');
-    //             return 'responsePayload is null';
-    //         }
-    //     } catch (error) {
-    //         this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
-    //         return error.toString();
-    //     }
-    // }
-    // public async getBlockByHash(
-    //     peer: string,
-    //     channelName: string,
-    //     hash: string,
-    //     username: string,
-    //     orgName: string): Promise<any> {
-    //     try {
-    //         // first setup the client for this org
-    //         const client = await this.clientService.getClientForOrg(orgName, username);
-    //         this.logger.debug('Successfully got the fabric client for the organization "%s"', orgName);
-    //         const channel = client.getChannel(channelName);
-    //         if (!channel) {
-    //             let message = format('Channel %s was not defined in the connection profile', channelName);
-    //             this.logger.error(message);
-    //             throw new Error(message);
-    //         }
-
-    //         const responsePayload = await channel.queryBlockByHash(Buffer.from(hash, 'hex'), peer);
-    //         if (responsePayload) {
-    //             this.logger.debug(responsePayload);
-    //             return responsePayload;
-    //         } else {
-    //             this.logger.error('responsePayload is null');
-    //             return 'responsePayload is null';
-    //         }
-    //     } catch (error) {
-    //         this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
-    //         return error.toString();
-    //     }
-
-    // }
-    // public async getChainInfo(
-    //     peer: string,
-    //     channelName: string,
-    //     username: string,
-    //     orgName: string): Promise<any> {
-    //     try {
-    //         // first setup the client for this org
-    //         const client = await this.clientService.getClientForOrg(orgName, username);
-    //         this.logger.debug('Successfully got the fabric client for the organization "%s"', orgName);
-    //         const channel = client.getChannel(channelName);
-    //         if (!channel) {
-    //             let message = format('Channel %s was not defined in the connection profile', channelName);
-    //             this.logger.error(message);
-    //             throw new Error(message);
-    //         }
-
-    //         const responsePayload = await channel.queryInfo(peer);
-    //         if (responsePayload) {
-    //             this.logger.debug(responsePayload);
-    //             return responsePayload;
-    //         } else {
-    //             this.logger.error('responsePayload is null');
-    //             return 'responsePayload is null';
-    //         }
-    //     } catch (error) {
-    //         this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
-    //         return error.toString();
-    //     }
-    // }
-
-    // public async getInstalledChaincodes (
-    //     peer: string,
-    //     channelName: string,
-    //     type: string,
-    //     username: string,
-    //     orgName: string): Promise<any> {
-    //     try {
-    //         // first setup the client for this org
-    //         const client = await this.clientService.getClientForOrg(orgName, username);
-    //         this.logger.debug('Successfully got the fabric client for the organization "%s"', orgName);
-    //         let response = null
-    //         if (type === 'installed') {
-    //             response = await client.queryInstalledChaincodes(peer, true); //use the admin identity
-    //         } else {
-    //             const channel = client.getChannel(channelName);
-    //             if(!channel) {
-    //                 const message = format('Channel %s was not defined in the connection profile', channelName);
-    //                 this.logger.error(message);
-    //                 throw new Error(message);
-    //             }
-    //             response = await channel.queryInstantiatedChaincodes(peer, true); //use the admin identity
-    //         }
-    //         if (response) {
-    //             if (type === 'installed') {
-    //                 this.logger.debug('<<< Installed Chaincodes >>>');
-    //             } else {
-    //                 this.logger.debug('<<< Instantiated Chaincodes >>>');
-    //             }
-    //             let details = [];
-    //             for (let i = 0; i < response.chaincodes.length; i++) {
-    //                 this.logger.debug('name: ' + response.chaincodes[i].name + ', version: ' +
-    //                     response.chaincodes[i].version + ', path: ' + response.chaincodes[i].path
-    //                 );
-    //                 details.push('name: ' + response.chaincodes[i].name + ', version: ' +
-    //                     response.chaincodes[i].version + ', path: ' + response.chaincodes[i].path
-    //                 );
-    //             }
-    //             return details;
-    //         } else {
-    //             this.logger.error('response is null');
-    //             return 'response is null';
-    //         }
-    //     } catch(error) {
-    //         this.logger.error('Failed to query due to error: ' + error.stack ? error.stack : error);
-    //         return error.toString();
-    //     }
-
-    // }
-
 }
