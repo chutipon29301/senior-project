@@ -7,11 +7,11 @@ import { ChannelRequest, ProposalResponse, BroadcastResponse, ChaincodeInvokeReq
 import { join } from 'path';
 
 @Injectable()
-export class FabricService {
+export class FabricTempService {
 
     constructor(@Inject(WINSTON) private readonly logger: Logger) { }
 
-    public async findOneOrCreate(username: string, organizationName: string) {
+    public async findUserOrCreate(username: string, organizationName: string) {
         const client = await this.getClientForOrg(organizationName);
         this.logger.info('Successfully initialized the credential stores');
         let user = await client.getUserContext(username, true);
@@ -34,7 +34,7 @@ export class FabricService {
     public async createChannel(channelName: string, username: string, organizationName: string) {
         this.logger.info(`====== Creating Channel '${channelName}' ======`);
         // Setup client for organization
-        const client = await this.getClientForOrg(organizationName);
+        const client = await this.getClientForOrg(organizationName, username);
         this.logger.info(`Successfully got the fabric client for the organization ${organizationName}`);
         // Get channel config generated from configtx
         const channelConfig = client.extractChannelConfig(readFileSync('/home/server/artifacts/channel/mychannel.tx'));

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WinstonModule } from 'nest-winston';
-import { FabricModule } from './fabric/fabric.module';
+import { FabricTempModule } from './fabric-temp/fabric-temp.module';
 import { OfferModule } from './offer/offer.module';
 import { RoundModule } from './round/round.module';
 import { TradeModule } from './trade/trade.module';
@@ -31,7 +31,7 @@ import * as winston from 'winston';
     }),
   }),
     UserModule,
-    FabricModule,
+    FabricTempModule,
     ConfigModule,
     OfferModule,
     RoundModule,
