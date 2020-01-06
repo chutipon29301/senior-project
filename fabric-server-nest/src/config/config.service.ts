@@ -28,7 +28,7 @@ export class ConfigService {
     get mySQLPort(): string {
         return this.getEnv('MYSQL_PORT');
     }
-    get smartContractUrl(): string{
-        return this.getEnv('SMARTCONTRACT_URL')
+    get smartContractUrl(): string {
+        return this.getEnv('SMARTCONTRACT_URL');
     }
 }

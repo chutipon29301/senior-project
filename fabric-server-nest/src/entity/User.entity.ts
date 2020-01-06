@@ -3,6 +3,7 @@ import { BuyTransaction } from './BuyTransaction.entity';
 import { SellTransaction } from './SellTransaction.entity';
 
 export enum UserType {
+    Operator = 'Operator',
     Building = 'Building',
     PV = 'PV',
 }
