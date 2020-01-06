@@ -83,7 +83,7 @@ PeerOrgs:
     # name collisions
     # ---------------------------------------------------------------------------
     Template:
-      Count: 2
+      Count: 1
       # Start: 5
       # Hostname: {{.Prefix}}{{.Index}} # default
       SANS:
@@ -106,7 +106,7 @@ PeerOrgs:
        Hostname: ca # implicitly ca.org1.example.com
 
     Template:
-      Count: 2
+      Count: 1
       SANS:
         - "localhost"
     Users:

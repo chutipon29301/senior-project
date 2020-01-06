@@ -68,23 +68,17 @@ channels:
         # Default: true
         eventSource: true
 
-      peer1.org1.example.com:
-        endorsingPeer: false
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: false
-
       peer0.org2.example.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
-
-      peer1.org2.example.com:
-        endorsingPeer: false
-        chaincodeQuery: true
-        ledgerQuery: true
-        eventSource: false
+    
+      # peer0.org3.example.com:
+      #   endorsingPeer: true
+      #   chaincodeQuery: true
+      #   ledgerQuery: true
+      #   eventSource: true
 
     # [Optional]. what chaincodes are expected to exist on this channel? The application can use
     # this information to validate that the target peers are in the expected state by comparing
@@ -102,7 +96,6 @@ organizations:
 
     peers:
       - peer0.org1.example.com
-      - peer1.org1.example.com
 
     # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
     # network. Typically certificates provisioning is done in a separate process outside of the
@@ -120,7 +113,7 @@ organizations:
     # this way. The SDK should allow applications to set the org admin identity via APIs, and only use
     # this route as an alternative when it exists.
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/5890f0061619c06fb29dea8cb304edecc020fe63f41a6db109f1e227cc1cb2a8_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/c256db5f0f42c17b91eb8a2c4d2087df6097071f1546ee2c8676bdbbc8394012_sk
     signedCert:
       path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
 
@@ -133,11 +126,10 @@ organizations:
     mspid: Org2MSP
     peers:
       - peer0.org2.example.com
-      - peer1.org2.example.com
     certificateAuthorities:
       - ca-org2
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/1995b11d6573ed3be52fcd7a5fa477bc0f183e1f5f398c8281d0ce7c2c75a076_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/2c90f26be4b1b9dd3b7f8419ff7d899c8fe378516bdd017a8031ab26b9a63ca2_sk
     signedCert:
       path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
 
@@ -172,27 +164,12 @@ peers:
     tlsCACerts:
       path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 
-  peer1.org1.example.com:
-    url: grpcs://peer1.org1.example.com:7051
-    grpcOptions:
-      ssl-target-name-override: peer1.org1.example.com
-    tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt
-
   peer0.org2.example.com:
     url: grpcs://peer0.org2.example.com:7051
     grpcOptions:
       ssl-target-name-override: peer0.org2.example.com
     tlsCACerts:
       path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
-
-  peer1.org2.example.com:
-    url: grpcs://peer1.org2.example.com:7051
-    eventUrl: grpcs://peer1.org2.example.com:7051
-    grpcOptions:
-      ssl-target-name-override: peer1.org2.example.com
-    tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/tls/ca.crt
 
 #
 # Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows

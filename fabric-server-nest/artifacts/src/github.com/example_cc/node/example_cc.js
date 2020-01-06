@@ -46,7 +46,7 @@ var Chaincode = class {
       buy: [],
       sell: [],
       result: [],
-      modifyDate,
+      modifyDate: '',
     })));
   }
 
