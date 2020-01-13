@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { BuyTransaction } from './BuyTransaction.entity';
 import { SellTransaction } from './SellTransaction.entity';
 
-export enum UserType {
-    Operator = 'Operator',
+export enum Organization {
+    Utility = 'Utility',
     Building = 'Building',
     PV = 'PV',
 }
@@ -18,9 +18,9 @@ export default class User {
 
     @Column({
         type: 'enum',
-        enum: UserType,
+        enum: Organization,
     })
-    type: UserType;
+    organization: Organization;
 
     @OneToMany(_ => BuyTransaction, buyTransaction => buyTransaction.user)
     buyTransactions: BuyTransaction[];
