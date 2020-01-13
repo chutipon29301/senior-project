@@ -9,13 +9,13 @@ services:
   ca.building.example.com:
     image: hyperledger/fabric-ca
     environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-building
-      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.building.example.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/31c24ddcc5280b1718ab4b2114a4dc44ebd64659aa32a10946791b1f7fc75252_sk
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.building.example.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/31c24ddcc5280b1718ab4b2114a4dc44ebd64659aa32a10946791b1f7fc75252_sk
+      FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
+      FABRIC_CA_SERVER_CA_NAME: ca-building
+      FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.building.example.com-cert.pem
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/31c24ddcc5280b1718ab4b2114a4dc44ebd64659aa32a10946791b1f7fc75252_sk
+      FABRIC_CA_SERVER_TLS_ENABLED: 'true'
+      FABRIC_CA_SERVER_TLS_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.building.example.com-cert.pem
+      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/31c24ddcc5280b1718ab4b2114a4dc44ebd64659aa32a10946791b1f7fc75252_sk
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ./channel/crypto-config/peerOrganizations/building.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
@@ -24,13 +24,13 @@ services:
   ca.pv.example.com:
     image: hyperledger/fabric-ca
     environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-pv
-      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.pv.example.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e76e6b518e7f949cdcfe35ce8c6dc4d48a28fe80c8dcd6afa69993dc3ac92a73_sk
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.pv.example.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/e76e6b518e7f949cdcfe35ce8c6dc4d48a28fe80c8dcd6afa69993dc3ac92a73_sk
+      FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
+      FABRIC_CA_SERVER_CA_NAME: ca-pv
+      FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.pv.example.com-cert.pem
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/e76e6b518e7f949cdcfe35ce8c6dc4d48a28fe80c8dcd6afa69993dc3ac92a73_sk
+      FABRIC_CA_SERVER_TLS_ENABLED: 'true'
+      FABRIC_CA_SERVER_TLS_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.pv.example.com-cert.pem
+      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/e76e6b518e7f949cdcfe35ce8c6dc4d48a28fe80c8dcd6afa69993dc3ac92a73_sk
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ./channel/crypto-config/peerOrganizations/pv.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
@@ -39,13 +39,13 @@ services:
   ca.utility.example.com:
     image: hyperledger/fabric-ca
     environment:
-      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
-      - FABRIC_CA_SERVER_CA_NAME=ca-utility
-      - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.utility.example.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f2e8f961efd7f30e5818417b2e650e7c02370293fdd0d5f037c5345ff39c0443_sk
-      - FABRIC_CA_SERVER_TLS_ENABLED=true
-      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.utility.example.com-cert.pem
-      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f2e8f961efd7f30e5818417b2e650e7c02370293fdd0d5f037c5345ff39c0443_sk
+      FABRIC_CA_HOME: /etc/hyperledger/fabric-ca-server
+      FABRIC_CA_SERVER_CA_NAME: ca-utility
+      FABRIC_CA_SERVER_CA_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.utility.example.com-cert.pem
+      FABRIC_CA_SERVER_CA_KEYFILE: /etc/hyperledger/fabric-ca-server-config/f2e8f961efd7f30e5818417b2e650e7c02370293fdd0d5f037c5345ff39c0443_sk
+      FABRIC_CA_SERVER_TLS_ENABLED: 'true'
+      FABRIC_CA_SERVER_TLS_CERTFILE: /etc/hyperledger/fabric-ca-server-config/ca.utility.example.com-cert.pem
+      FABRIC_CA_SERVER_TLS_KEYFILE: /etc/hyperledger/fabric-ca-server-config/f2e8f961efd7f30e5818417b2e650e7c02370293fdd0d5f037c5345ff39c0443_sk
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ./channel/crypto-config/peerOrganizations/utility.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
@@ -78,27 +78,31 @@ services:
     container_name: peer0.building.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      CORE_VM_ENDPOINT: unix:///host/var/run/docker.sock
       # the following setting starts chaincode containers on the same
       # bridge network as the peers
       # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=seniorproject_default
-      - FABRIC_LOGGING_SPEC=DEBUG
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
+      CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE: seniorproject_default
+      FABRIC_LOGGING_SPEC: DEBUG
+      CORE_PEER_GOSSIP_USELEADERELECTION: 'true'
+      CORE_PEER_GOSSIP_ORGLEADER: 'false'
       # The following setting skips the gossip handshake since we are
       # are not doing mutual TLS
-      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
-      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
-      - CORE_PEER_ID=peer0.building.example.com
-      - CORE_PEER_LOCALMSPID=BuildingMSP
-      - CORE_PEER_ADDRESS=peer0.building.example.com:7051
+      CORE_PEER_GOSSIP_SKIPHANDSHAKE: 'true'
+      CORE_PEER_MSPCONFIGPATH: /etc/hyperledger/crypto/peer/msp
+      CORE_PEER_TLS_ENABLED: 'true'
+      CORE_PEER_TLS_KEY_FILE: /etc/hyperledger/crypto/peer/tls/server.key
+      CORE_PEER_TLS_CERT_FILE: /etc/hyperledger/crypto/peer/tls/server.crt
+      CORE_PEER_TLS_ROOTCERT_FILE: /etc/hyperledger/crypto/peer/tls/ca.crt
+      CORE_PEER_ID: peer0.building.example.com
+      CORE_PEER_LOCALMSPID: BuildingMSP
+      CORE_PEER_ADDRESS: peer0.building.example.com:7051
       # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.building.example.com:7051      
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.building.example.com:7051
+      CORE_PEER_GOSSIP_EXTERNALENDPOINT: peer0.building.example.com:7051
+      CORE_LEDGER_STATE_STATEDATABASE: CouchDB
+      CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS: couchdb.peer0.building.example.com:5984
+      CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME: admin
+      CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD: adminpw
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
@@ -106,32 +110,38 @@ services:
       - ./channel/crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
+      - couchdb.peer0.building.example.com
 
+  couchdb.peer0.building.example.com:
+    container_name: couchdb.peer0.building.example.com
+    image: hyperledger/fabric-couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: adminpw
+    
   peer0.pv.example.com:
     container_name: peer0.pv.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      # the following setting starts chaincode containers on the same
-      # bridge network as the peers
-      # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=seniorproject_default
-      - FABRIC_LOGGING_SPEC=DEBUG
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      # The following setting skips the gossip handshake since we are
-      # are not doing mutual TLS
-      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
-      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
-      - CORE_PEER_ID=peer0.pv.example.com
-      - CORE_PEER_LOCALMSPID=PVMSP
-      - CORE_PEER_ADDRESS=peer0.pv.example.com:7051
-      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.pv.example.com:7051      
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.pv.example.com:7051
+      CORE_VM_ENDPOINT: unix:///host/var/run/docker.sock
+      CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE: seniorproject_default
+      FABRIC_LOGGING_SPEC: DEBUG
+      CORE_PEER_GOSSIP_USELEADERELECTION: 'true'
+      CORE_PEER_GOSSIP_ORGLEADER: 'false'
+      CORE_PEER_GOSSIP_SKIPHANDSHAKE: 'true'
+      CORE_PEER_MSPCONFIGPATH: /etc/hyperledger/crypto/peer/msp
+      CORE_PEER_TLS_ENABLED: 'true'
+      CORE_PEER_TLS_KEY_FILE: /etc/hyperledger/crypto/peer/tls/server.key
+      CORE_PEER_TLS_CERT_FILE: /etc/hyperledger/crypto/peer/tls/server.crt
+      CORE_PEER_TLS_ROOTCERT_FILE: /etc/hyperledger/crypto/peer/tls/ca.crt
+      CORE_PEER_ID: peer0.pv.example.com
+      CORE_PEER_LOCALMSPID: PVMSP
+      CORE_PEER_ADDRESS: peer0.pv.example.com:7051   
+      CORE_PEER_GOSSIP_EXTERNALENDPOINT: peer0.pv.example.com:7051
+      CORE_LEDGER_STATE_STATEDATABASE: CouchDB
+      CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS: couchdb.peer0.pv.example.com:5984
+      CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME: admin
+      CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD: adminpw
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
@@ -139,32 +149,37 @@ services:
       - ./channel/crypto-config/peerOrganizations/pv.example.com/peers/peer0.pv.example.com/:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
+      - couchdb.peer0.pv.example.com
+  couchdb.peer0.pv.example.com:
+    container_name: couchdb.peer0.pv.example.com
+    image: hyperledger/fabric-couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: adminpw
 
   peer0.utility.example.com:
     container_name: peer0.utility.example.com
     image: hyperledger/fabric-peer
     environment:
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      # the following setting starts chaincode containers on the same
-      # bridge network as the peers
-      # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=seniorproject_default
-      - FABRIC_LOGGING_SPEC=DEBUG
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      # The following setting skips the gossip handshake since we are
-      # are not doing mutual TLS
-      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/crypto/peer/msp
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/crypto/peer/tls/server.key
-      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/crypto/peer/tls/server.crt
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/crypto/peer/tls/ca.crt
-      - CORE_PEER_ID=peer0.utility.example.com
-      - CORE_PEER_LOCALMSPID=UtilityMSP
-      - CORE_PEER_ADDRESS=peer0.utility.example.com:7051
-      # - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.utility.example.com:7051      
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.utility.example.com:7051
+      CORE_VM_ENDPOINT: unix:///host/var/run/docker.sock
+      CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE: seniorproject_default
+      FABRIC_LOGGING_SPEC: DEBUG
+      CORE_PEER_GOSSIP_USELEADERELECTION: 'true'
+      CORE_PEER_GOSSIP_ORGLEADER: 'false'
+      CORE_PEER_GOSSIP_SKIPHANDSHAKE: 'true'
+      CORE_PEER_MSPCONFIGPATH: /etc/hyperledger/crypto/peer/msp
+      CORE_PEER_TLS_ENABLED: 'true'
+      CORE_PEER_TLS_KEY_FILE: /etc/hyperledger/crypto/peer/tls/server.key
+      CORE_PEER_TLS_CERT_FILE: /etc/hyperledger/crypto/peer/tls/server.crt
+      CORE_PEER_TLS_ROOTCERT_FILE: /etc/hyperledger/crypto/peer/tls/ca.crt
+      CORE_PEER_ID: peer0.utility.example.com
+      CORE_PEER_LOCALMSPID: UtilityMSP
+      CORE_PEER_ADDRESS: peer0.utility.example.com:7051    
+      CORE_PEER_GOSSIP_EXTERNALENDPOINT: peer0.utility.example.com:7051
+      CORE_LEDGER_STATE_STATEDATABASE: CouchDB
+      CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS: couchdb.peer0.utility.example.com:5984
+      CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME: admin
+      CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD: adminpw
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: peer node start
     volumes:
@@ -172,6 +187,13 @@ services:
       - ./channel/crypto-config/peerOrganizations/utility.example.com/peers/peer0.utility.example.com/:/etc/hyperledger/crypto/peer
     depends_on:
       - orderer.example.com
+      - couchdb.peer0.utility.example.com
+  couchdb.peer0.utility.example.com:
+    container_name: couchdb.peer0.utility.example.com
+    image: hyperledger/fabric-couchdb
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: adminpw
 networks: 
   default:
     external:
