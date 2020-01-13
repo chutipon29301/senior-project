@@ -3,8 +3,10 @@ version: '3.7'
 services: 
   jupyter.example.com:
     container_name: jupyter.example.com
-    image: jupyter/scipy-notebook
+    build: ./jupyter
     volumes: 
       - ./jupyter:/home/jovyan/work
+    environment: 
+      GRANT_SUDO: 'yes'
     ports: 
       - 8888:8888
