@@ -113,7 +113,7 @@ organizations:
     # this way. The SDK should allow applications to set the org admin identity via APIs, and only use
     # this route as an alternative when it exists.
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/users/Admin@building.example.com/msp/keystore/c256db5f0f42c17b91eb8a2c4d2087df6097071f1546ee2c8676bdbbc8394012_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/users/Admin@building.example.com/msp/keystore/19e671af30f6cadcd727b9ed530d2bb41df08a150058ece816ea72211ec3c15d_sk
     signedCert:
       path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/users/Admin@building.example.com/msp/signcerts/Admin@building.example.com-cert.pem
 
@@ -129,9 +129,10 @@ organizations:
     certificateAuthorities:
       - ca-pv
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/users/Admin@pv.example.com/msp/keystore/2c90f26be4b1b9dd3b7f8419ff7d899c8fe378516bdd017a8031ab26b9a63ca2_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/users/Admin@pv.example.com/msp/keystore/eb9d45e02ec36ced835f6c32e7969f270f6178e262cff33a2737069b6c0e2f68_sk
     signedCert:
       path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/users/Admin@pv.example.com/msp/signcerts/Admin@pv.example.com-cert.pem
+
   Utility:
     mspid: UtilityMSP
     peers:
@@ -139,7 +140,7 @@ organizations:
     certificateAuthorities:
       - ca-utility
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/users/Admin@utility.example.com/msp/keystore/2c90f26be4b1b9dd3b7f8419ff7d899c8fe378516bdd017a8031ab26b9a63ca2_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/users/Admin@utility.example.com/msp/keystore/58f615d67277a846d3df1214d165dea9d20641e5e7b3b111e1f4a0d4cdd70679_sk
     signedCert:
       path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/users/Admin@utility.example.com/msp/signcerts/Admin@utility.example.com-cert.pem
 
