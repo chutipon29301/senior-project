@@ -76,7 +76,10 @@ export class FabricService {
     public async createChannel(channelName: string, organizationName: string) {
         this.logger.info('================= Create channel =================');
         const client = await this.getClientForOrganization(organizationName);
-        // TODO: Check existing channel
+        const channel = await this.getChannel(channelName, organizationName);
+        if (!channel) {
+            throw new BadRequestException('Channel not exist');
+        }
         const envelope = readFileSync(`/home/server/artifacts/channel/${channelName}.tx`);
         const channelConfig = client.extractChannelConfig(envelope);
         const signature = client.signChannelConfig(channelConfig);
@@ -213,10 +216,10 @@ export class FabricService {
             txId,
         });
         const allGood = proposalResponses.reduce((previous, current) =>
-        (previous &&
-            !(current instanceof Error) &&
-            current.response && current.response.status === 200
-        ), true);
+            (previous &&
+                !(current instanceof Error) &&
+                current.response && current.response.status === 200
+            ), true);
         if (allGood) {
             const eventHubs = channel.getChannelEventHubsForOrg();
             await Promise.all([
@@ -268,7 +271,7 @@ export class FabricService {
             chaincodeId: chaincodeName,
             fcn,
             args,
-        });
+        }, true);
         this.logger.info(responsePayloads.map(o => o.toString()));
         return responsePayloads.toString();
     }
