@@ -31,8 +31,8 @@ var Chaincode = class {
       // return shim.success('Hello')
       return shim.success(payload);
     } catch (err) {
-      console.log(err);
-      return shim.error(err);
+      console.log(err.toString());
+      return shim.error(err.toString());
     }
   }
 
