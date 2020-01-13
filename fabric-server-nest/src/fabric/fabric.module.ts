@@ -7,5 +7,6 @@ import { ConfigModule } from '../config/config.module';
   imports: [ConfigModule],
   providers: [FabricService],
   controllers: [FabricController],
+  exports: [FabricService],
 })
 export class FabricModule {}
