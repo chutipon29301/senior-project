@@ -118,6 +118,8 @@ services:
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: adminpw
+    volumes: 
+      - couchdb_peer0_building:/opt/couchbase/data
     
   peer0.pv.example.com:
     container_name: peer0.pv.example.com
@@ -156,6 +158,8 @@ services:
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: adminpw
+    volumes: 
+      - couchdb_peer0_pv:/opt/couchbase/data
 
   peer0.utility.example.com:
     container_name: peer0.utility.example.com
@@ -194,6 +198,12 @@ services:
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: adminpw
+    volumes: 
+      - couchdb_peer0_utility:/opt/couchbase/data
+volumes: 
+  couchdb_peer0_building:
+  couchdb_peer0_pv:
+  couchdb_peer0_utility:
 networks: 
   default:
     external:
