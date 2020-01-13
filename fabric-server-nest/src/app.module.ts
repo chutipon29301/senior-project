@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from './config/config.module';
 import { UserModule } from './user/user.module';
 import { FabricModule } from './fabric/fabric.module';
+import { AuthModule } from './auth/auth.module';
 import * as winston from 'winston';
 
 @Module({
@@ -37,7 +38,8 @@ import * as winston from 'winston';
     OfferModule,
     RoundModule,
     TradeModule,
-    FabricModule],
+    FabricModule,
+    AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
