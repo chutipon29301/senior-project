@@ -65,4 +65,13 @@ export class FabricController {
         return this.fabricService.invokeChaincode(peers, channelName, fcn, args, organizationName);
     }
 
+    @Post('setup')
+    public async setUpNetwork() {
+        await this.fabricService.createChannel('mychannel', 'Org1');
+        await this.fabricService.joinChannel('mychannel', ['peer0.org1.example.com'], 'Org1');
+        await this.fabricService.joinChannel('mychannel', ['peer0.org2.example.com'], 'Org2');
+        await this.fabricService.installChaincode('Org1', ['peer0.org1.example.com']);
+        await this.fabricService.installChaincode('Org2', ['peer0.org2.example.com']);
+    }
+
 }
