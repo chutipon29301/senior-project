@@ -1,7 +1,8 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { CrudController, Crud } from '@nestjsx/crud';
 import User from '../entity/User.entity';
 import { UserService } from './user.service';
+import { CreateUserDto } from './user.dto';
 
 @Crud({
     model: {
@@ -12,9 +13,9 @@ import { UserService } from './user.service';
 export class UserController implements CrudController<User> {
     constructor(readonly service: UserService) { }
 
-    @Post()
-    public async createUser() {
-        
+    @Post('createUser')
+    public async createUser(@Body() { name, organizationName }: CreateUserDto): Promise<User> {
+        return this.service.createUser(name, organizationName);
     }
 
 }
