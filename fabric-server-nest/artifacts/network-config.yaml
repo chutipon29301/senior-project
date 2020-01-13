@@ -48,7 +48,7 @@ channels:
 
     # Required. list of peers from participating orgs
     peers:
-      peer0.org1.example.com:
+      peer0.building.example.com:
         # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
         # have the chaincode installed. The app can also use this property to decide which peers
         # to send the chaincode install request. Default: true
@@ -68,17 +68,17 @@ channels:
         # Default: true
         eventSource: true
 
-      peer0.org2.example.com:
+      peer0.pv.example.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
     
-      # peer0.org3.example.com:
-      #   endorsingPeer: true
-      #   chaincodeQuery: true
-      #   ledgerQuery: true
-      #   eventSource: true
+      peer0.utility.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
 
     # [Optional]. what chaincodes are expected to exist on this channel? The application can use
     # this information to validate that the target peers are in the expected state by comparing
@@ -91,11 +91,11 @@ channels:
 # list of participating organizations in this network
 #
 organizations:
-  Org1:
-    mspid: Org1MSP
+  Building:
+    mspid: BuildingMSP
 
     peers:
-      - peer0.org1.example.com
+      - peer0.building.example.com
 
     # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
     # network. Typically certificates provisioning is done in a separate process outside of the
@@ -103,7 +103,7 @@ organizations:
     # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
     # Fabric-CA servers.
     certificateAuthorities:
-      - ca-org1
+      - ca-building
 
     # [Optional]. If the application is going to make requests that are reserved to organization
     # administrators, including creating/updating channels, installing/instantiating chaincodes, it
@@ -113,25 +113,35 @@ organizations:
     # this way. The SDK should allow applications to set the org admin identity via APIs, and only use
     # this route as an alternative when it exists.
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/c256db5f0f42c17b91eb8a2c4d2087df6097071f1546ee2c8676bdbbc8394012_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/users/Admin@building.example.com/msp/keystore/c256db5f0f42c17b91eb8a2c4d2087df6097071f1546ee2c8676bdbbc8394012_sk
     signedCert:
-      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/users/Admin@building.example.com/msp/signcerts/Admin@building.example.com-cert.pem
 
   # the profile will contain public information about organizations other than the one it belongs to.
   # These are necessary information to make transaction lifecycles work, including MSP IDs and
   # peers with a public URL to send transaction proposals. The file will not contain private
   # information reserved for members of the organization, such as admin key and certificate,
   # fabric-ca registrar enroll ID and secret, etc.
-  Org2:
-    mspid: Org2MSP
+  PV:
+    mspid: PVMSP
     peers:
-      - peer0.org2.example.com
+      - peer0.pv.example.com
     certificateAuthorities:
-      - ca-org2
+      - ca-pv
     adminPrivateKey:
-      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/2c90f26be4b1b9dd3b7f8419ff7d899c8fe378516bdd017a8031ab26b9a63ca2_sk
+      path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/users/Admin@pv.example.com/msp/keystore/2c90f26be4b1b9dd3b7f8419ff7d899c8fe378516bdd017a8031ab26b9a63ca2_sk
     signedCert:
-      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/users/Admin@pv.example.com/msp/signcerts/Admin@pv.example.com-cert.pem
+  Utility:
+    mspid: UtilityMSP
+    peers:
+      - peer0.utility.example.com
+    certificateAuthorities:
+      - ca-utility
+    adminPrivateKey:
+      path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/users/Admin@utility.example.com/msp/keystore/2c90f26be4b1b9dd3b7f8419ff7d899c8fe378516bdd017a8031ab26b9a63ca2_sk
+    signedCert:
+      path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/users/Admin@utility.example.com/msp/signcerts/Admin@utility.example.com-cert.pem
 
 #
 # List of orderers to send transaction and channel create/update requests to. For the time
@@ -155,21 +165,28 @@ orderers:
 # and event listener registration.
 #
 peers:
-  peer0.org1.example.com:
+  peer0.building.example.com:
     # this URL is used to send endorsement and query requests
-    url: grpcs://peer0.org1.example.com:7051
+    url: grpcs://peer0.building.example.com:7051
 
     grpcOptions:
-      ssl-target-name-override: peer0.org1.example.com
+      ssl-target-name-override: peer0.building.example.com
     tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+      path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/peers/peer0.building.example.com/tls/ca.crt
 
-  peer0.org2.example.com:
-    url: grpcs://peer0.org2.example.com:7051
+  peer0.pv.example.com:
+    url: grpcs://peer0.pv.example.com:7051
     grpcOptions:
-      ssl-target-name-override: peer0.org2.example.com
+      ssl-target-name-override: peer0.pv.example.com
     tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt
+      path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/peers/peer0.pv.example.com/tls/ca.crt
+
+  peer0.utility.example.com:
+    url: grpcs://peer0.utility.example.com:7051
+    grpcOptions:
+      ssl-target-name-override: peer0.utility.example.com
+    tlsCACerts:
+      path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/peers/peer0.utility.example.com/tls/ca.crt
 
 #
 # Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
@@ -177,14 +194,14 @@ peers:
 # Certificate Authority instead of Fabric-CA, in which case this section would not be specified.
 #
 certificateAuthorities:
-  ca-org1:
-    url: https://ca.org1.example.com:7054
+  ca-building:
+    url: https://ca.building.example.com:7054
     # the properties specified under this object are passed to the 'http' client verbatim when
     # making the request to the Fabric-CA server
     httpOptions:
       verify: false
     tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/building.example.com/ca/ca.building.example.com-cert.pem
 
     # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
     # needed to enroll and invoke new users.
@@ -192,16 +209,28 @@ certificateAuthorities:
       - enrollId: admin
         enrollSecret: adminpw
     # [Optional] The optional name of the CA.
-    caName: ca-org1
+    caName: ca-building
 
-  ca-org2:
-    url: https://ca.org2.example.com:7054
+  ca-pv:
+    url: https://ca.pv.example.com:7054
     httpOptions:
       verify: false
     tlsCACerts:
-      path: artifacts/channel/crypto-config/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem
+      path: artifacts/channel/crypto-config/peerOrganizations/pv.example.com/ca/ca.pv.example.com-cert.pem
     registrar:
       - enrollId: admin
         enrollSecret: adminpw
     # [Optional] The optional name of the CA.
-    caName: ca-org2
+    caName: ca-pv
+  
+  ca-utility:
+    url: https://ca.utility.example.com:7054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: artifacts/channel/crypto-config/peerOrganizations/utility.example.com/ca/ca.utility.example.com-cert.pem
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca-utility
