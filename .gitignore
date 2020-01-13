@@ -3,3 +3,6 @@
 bin
 *-old
 env
+data/
+.devcontainer
+jupyter/biddingStrategy/src/__pycache__
