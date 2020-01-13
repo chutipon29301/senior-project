@@ -10,6 +10,7 @@ import { ConfigService } from './config/config.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from './config/config.module';
 import { UserModule } from './user/user.module';
+import { FabricModule } from './fabric/fabric.module';
 import * as winston from 'winston';
 
 @Module({
@@ -35,7 +36,8 @@ import * as winston from 'winston';
     ConfigModule,
     OfferModule,
     RoundModule,
-    TradeModule],
+    TradeModule,
+    FabricModule],
   controllers: [AppController],
   providers: [AppService],
 })
