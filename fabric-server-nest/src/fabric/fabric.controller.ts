@@ -1,6 +1,7 @@
 import { Controller, Post, Param, Get, Body, Query } from '@nestjs/common';
 import { FabricService } from './fabric.service';
 import { CreateUserDto, JoinChannelDto, CreateChannelDto, GetChannelNameDto, InstallChaincodeDto, InvokeChaincodeDto, QueryChaincodeParamDto, QueryChaincodeQueryDto, InstantiateChaincodeDto } from './fabric.dto';
+import { Organization } from '../entity/User.entity';
 
 @Controller('fabric')
 export class FabricController {
@@ -14,7 +15,7 @@ export class FabricController {
 
     @Post('user')
     public async crateUser(@Body() { username }: CreateUserDto) {
-        return this.fabricService.createUser(username, 'Org1');
+        return this.fabricService.createUser(username, Organization.Building);
     }
 
     @Get('channel/:channelName')
