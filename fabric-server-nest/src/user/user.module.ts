@@ -9,5 +9,6 @@ import { FabricModule } from '../fabric/fabric.module';
   imports: [TypeOrmModule.forFeature([User]), FabricModule],
   providers: [UserService],
   controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule { }
