@@ -1,4 +1,5 @@
 import { Injectable, RequestTimeoutException } from '@nestjs/common';
+import { Organization } from '../entity/User.entity';
 
 @Injectable()
 export class ConfigService {
@@ -33,35 +34,47 @@ export class ConfigService {
         return this.getEnv('SMARTCONTRACT_URL');
     }
 
-    public getFabricAdminContextForOrg(organizationName: string): { username: string, password: string } {
-        switch (organizationName.toLowerCase()) {
-            case 'org1':
+    get jwtSecret(): string {
+        return 'Hello';
+    }
+
+    public getFabricAdminContextForOrg(organization: Organization): { username: string, password: string } {
+        switch (organization) {
+            case Organization.Building:
                 return {
-                    username: this.fabricAdminOrg1Username,
-                    password: this.fabricAdminOrg1Password,
+                    username: this.buildingAdminUsername,
+                    password: this.buildingAdminPassword,
                 };
-            case 'org2':
+            case Organization.PV:
                 return {
-                    username: this.fabricAdminOrg2Username,
-                    password: this.fabricAdminOrg2Password,
+                    username: this.pvAdminUsername,
+                    password: this.pvAdminPassword,
+                };
+            case Organization.Utility:
+                return {
+                    username: this.utilityAdminUsername,
+                    password: this.utilityAdminPassword,
                 };
         }
     }
 
-    private get fabricAdminOrg1Username(): string {
-        return 'admin';
+    private get buildingAdminUsername(): string {
+        return this.getEnv('BUILDING_ADMIN_USERNAME');
     }
-
-    private get fabricAdminOrg1Password(): string {
-        return 'adminpw';
+    private get buildingAdminPassword(): string {
+        return this.getEnv('BUILDING_ADMIN_PASSWORD');
     }
-
-    private get fabricAdminOrg2Username(): string {
-        return 'admin';
+    private get pvAdminUsername(): string {
+        return this.getEnv('PV_ADMIN_USERNAME');
     }
-
-    private get fabricAdminOrg2Password(): string {
-        return 'adminpw';
+    private get pvAdminPassword(): string {
+        return this.getEnv('PV_ADMIN_PASSWORD');
+    }
+    private get utilityAdminUsername(): string {
+        return this.getEnv('UTILITY_ADMIN_USERNAME');
+    }
+    private get utilityAdminPassword(): string {
+        return this.getEnv('UTILITY_ADMIN_PASSWORD');
     }
 
 }
