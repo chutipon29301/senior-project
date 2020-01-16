@@ -4,7 +4,8 @@ import { Logger } from 'winston';
 import * as Client from 'fabric-client';
 import { ConfigService } from '../config/config.service';
 import { readFileSync } from 'fs';
-import { ChannelRequest, Channel, ProposalResponse, BroadcastResponse } from 'fabric-client';
+import { ChannelRequest, Channel, ProposalResponse } from 'fabric-client';
+import { Organization } from '../entity/User.entity';
 
 @Injectable()
 export class FabricService {
@@ -25,7 +26,7 @@ export class FabricService {
         return user && user.isEnrolled();
     }
 
-    public async createUser(username: string, organizationName: string) {
+    public async createUser(username: string, organizationName: Organization) {
         this.logger.info('================= Create user =================');
         const isEnrolled = await this.checkExistUser(username, organizationName);
         if (isEnrolled) {
