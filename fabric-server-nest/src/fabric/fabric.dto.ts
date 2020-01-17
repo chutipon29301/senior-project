@@ -9,9 +9,6 @@ export class CreateUserDto {
 export class CreateChannelDto {
     @IsString()
     channelName: string;
-
-    @IsString()
-    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -19,19 +16,10 @@ export class JoinChannelDto {
 
     @IsString()
     channelName: string;
-
-    @IsArray()
-    peers: string[];
-
-    @IsString()
-    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
 export class GetChannelNameDto {
-    @IsString()
-    organizationName: string;
-
     @IsString()
     peer: string;
 }
@@ -40,16 +28,10 @@ export class GetChannelNameDto {
 export class InstantiateChaincodeDto {
     @IsString()
     channelName: string;
-
-    @IsString()
-    organizationName: string;
 }
 
 // tslint:disable-next-line: max-classes-per-file
 export class InstallChaincodeDto {
-    @IsString()
-    organizationName: string;
-
     @IsArray()
     peers: string[];
 }
@@ -67,9 +49,6 @@ export class InvokeChaincodeDto {
 
     @IsArray()
     args: string[];
-
-    @IsString()
-    organizationName: string;
 
 }
 
@@ -92,7 +71,4 @@ export class QueryChaincodeQueryDto {
 
     @IsString()
     args: string;
-
-    @IsString()
-    organizationName: string;
 }

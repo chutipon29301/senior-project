@@ -13,7 +13,7 @@ import { CreateUserDto } from './user.dto';
 export class UserController implements CrudController<User> {
     constructor(readonly service: UserService) { }
 
-    @Post('createUser')
+    @Post('create')
     public async createUser(@Body() { name, organizationName }: CreateUserDto): Promise<User> {
         return this.service.createUser(name, organizationName);
     }

@@ -1,26 +1,39 @@
 import { Controller, Post, Param, Get, Body, Query } from '@nestjs/common';
 import { FabricService } from './fabric.service';
-import { CreateUserDto, JoinChannelDto, CreateChannelDto, GetChannelNameDto, InstallChaincodeDto, InvokeChaincodeDto, QueryChaincodeParamDto, QueryChaincodeQueryDto, InstantiateChaincodeDto } from './fabric.dto';
-import { Organization } from '../entity/User.entity';
+import {
+    JoinChannelDto,
+    CreateChannelDto,
+    InstallChaincodeDto,
+    InvokeChaincodeDto,
+    QueryChaincodeParamDto,
+    QueryChaincodeQueryDto,
+    InstantiateChaincodeDto,
+} from './fabric.dto';
+import User, { Organization } from '../entity/User.entity';
+import { Orgs } from '../decorator/org.decorator';
+import { RequestUser } from '../decorator/user.decorator';
 
 @Controller('fabric')
 export class FabricController {
 
     constructor(private readonly fabricService: FabricService) { }
 
-    @Get('user/:username')
-    public async findUser(@Param('username') username: string): Promise<boolean> {
-        return this.fabricService.checkExistUser(username, 'Org1');
+    @Orgs()
+    @Get('user')
+    public async findUser(@RequestUser() { id, organization }: User): Promise<boolean> {
+        return this.fabricService.checkExistUser(id, organization);
     }
 
-    @Post('user')
-    public async crateUser(@Body() { username }: CreateUserDto) {
-        return this.fabricService.createUser(username, Organization.Building);
+    @Orgs()
+    @Get('peers')
+    public async getPeersInOrganization(@RequestUser() { organization }: User) {
+        return this.fabricService.getPeersNameInOrg(organization);
     }
 
+    @Orgs()
     @Get('channel/:channelName')
-    public async getChannel(@Param('channelName') channelName: string): Promise<boolean> {
-        const channel = await this.fabricService.getChannel(channelName, 'Org1');
+    public async getChannel(@RequestUser() { organization }: User, @Param('channelName') channelName: string): Promise<boolean> {
+        const channel = await this.fabricService.getChannel(channelName, organization);
         if (channel) {
             return true;
         } else {
@@ -28,51 +41,57 @@ export class FabricController {
         }
     }
 
-    @Get('channel/:organizationName/:peer')
-    public async getChannelNameInPeer(@Param() { peer, organizationName }: GetChannelNameDto): Promise<string[]> {
-        return await this.fabricService.listChannelNameInPeer(peer, organizationName);
+    @Orgs()
+    @Get('listChannel/:peer')
+    public async listChannelNameInPeer(@RequestUser() { id, organization }: User, @Param('peer') peer: string): Promise<string[]> {
+        return this.fabricService.listChannelNameInPeer(peer, organization, id);
     }
 
+    @Orgs()
     @Get('chaincode/:channelName/:chaincodeName/:functionName')
     public async queryChaincode(
         @Param() { channelName, chaincodeName, functionName }: QueryChaincodeParamDto,
-        @Query() { peer, args, organizationName }: QueryChaincodeQueryDto,
+        @Query() { peer, args }: QueryChaincodeQueryDto,
+        @RequestUser() { id, organization }: User,
     ) {
-        return this.fabricService.queryChaincode(peer, channelName, chaincodeName, JSON.parse(decodeURI(args)), functionName, organizationName);
+        return this.fabricService.queryChaincode(
+            peer,
+            channelName,
+            chaincodeName,
+            JSON.parse(decodeURI(args)),
+            functionName,
+            organization,
+            id);
     }
 
+    @Orgs()
     @Post('channel')
-    public async createChannel(@Body() { channelName, organizationName }: CreateChannelDto) {
-        await this.fabricService.createChannel(channelName, organizationName);
+    public async createChannel(@RequestUser() { organization }: User, @Body() { channelName }: CreateChannelDto) {
+        await this.fabricService.createChannel(channelName, organization);
     }
 
+    @Orgs()
     @Post('channel/join')
-    public async joinChannel(@Body() { channelName, peers, organizationName }: JoinChannelDto) {
-        await this.fabricService.joinChannel(channelName, peers, organizationName);
+    public async joinChannel(@RequestUser() { organization }: User, @Body() { channelName }: JoinChannelDto) {
+        await this.fabricService.joinChannel(channelName, organization);
     }
 
+    @Orgs()
     @Post('chaincode/install')
-    public async installChaincode(@Body() { organizationName, peers }: InstallChaincodeDto) {
-        await this.fabricService.installChaincode(organizationName, peers);
+    public async installChaincode(@RequestUser() { organization }: User) {
+        await this.fabricService.installChaincode(organization);
     }
 
+    @Orgs()
     @Post('chaincode/instantiate')
-    public async instantiateChaincode(@Body() { channelName, organizationName }: InstantiateChaincodeDto) {
-        return this.fabricService.instantiateChaincode(channelName, organizationName);
+    public async instantiateChaincode(@RequestUser() { organization }: User, @Body() { channelName }: InstantiateChaincodeDto) {
+        return this.fabricService.instantiateChaincode(channelName, organization);
     }
 
+    @Orgs()
     @Post('chaincode/invoke')
-    public async invokeChaincode(@Body() { peers, channelName, fcn, args, organizationName }: InvokeChaincodeDto) {
-        return this.fabricService.invokeChaincode(peers, channelName, fcn, args, organizationName);
-    }
-
-    @Post('setup')
-    public async setUpNetwork() {
-        await this.fabricService.createChannel('mychannel', 'Org1');
-        await this.fabricService.joinChannel('mychannel', ['peer0.org1.example.com'], 'Org1');
-        await this.fabricService.joinChannel('mychannel', ['peer0.org2.example.com'], 'Org2');
-        await this.fabricService.installChaincode('Org1', ['peer0.org1.example.com']);
-        await this.fabricService.installChaincode('Org2', ['peer0.org2.example.com']);
+    public async invokeChaincode(@RequestUser() { organization }: User, @Body() { peers, channelName, fcn, args }: InvokeChaincodeDto) {
+        return this.fabricService.invokeChaincode(peers, channelName, fcn, args, organization);
     }
 
 }
