@@ -19,30 +19,30 @@ export class FabricService {
      * User Management
      */
 
-    public async checkExistUser(username: string, organizationName: string): Promise<boolean> {
+    public async checkExistUser(username: string, organization: Organization): Promise<boolean> {
         this.logger.info('================== Find user ==================');
-        const client = await this.getClientForOrganization(organizationName);
+        const client = await this.getClientForOrganization(organization);
         const user = await client.getUserContext(username, true);
         return user && user.isEnrolled();
     }
 
-    public async createUser(username: string, organizationName: Organization) {
+    public async createUser(username: string, organization: Organization) {
         this.logger.info('================= Create user =================');
-        const isEnrolled = await this.checkExistUser(username, organizationName);
+        const isEnrolled = await this.checkExistUser(username, organization);
         if (isEnrolled) {
             throw new BadRequestException(`User with username "${username}" already exist`);
         }
         try {
-            const client = await this.getClientForOrganization(organizationName);
-            const adminUser = await client.setUserContext(this.configService.getFabricAdminContextForOrg(organizationName));
+            const client = await this.getClientForOrganization(organization);
+            const adminUser = await client.setUserContext(this.configService.getFabricAdminContextForOrg(organization));
             const caClient = client.getCertificateAuthority();
             const password = await caClient.register({
                 enrollmentID: username,
-                affiliation: `${organizationName.toLowerCase()}.department1`,
+                affiliation: `${organization.toLowerCase()}.department1`,
             }, adminUser);
             client.setUserContext({ username, password });
         } catch (error) {
-            throw new BadRequestException(error);
+            throw new BadRequestException(error.toString());
         }
     }
 
@@ -50,9 +50,23 @@ export class FabricService {
      * Channel Management
      */
 
-    public async getChannel(channelName: string, organizationName: string): Promise<Channel | null> {
+    public async getPeersNameInOrg(organization: Organization): Promise<string[]> {
+        this.logger.info('================= Get peers in org =================');
+        const client = await this.getClientForOrganization(organization);
+        if (!client) {
+            throw new BadRequestException('Organization not found');
+        }
+        const peers = client.getPeersForOrg(`${organization}MSP`);
+        return peers.map(peer => peer.getName());
+    }
+
+    /**
+     * Channel Management
+     */
+
+    public async getChannel(channelName: string, organization: Organization): Promise<Channel | null> {
         this.logger.info('================= Get channel =================');
-        const client = await this.getClientForOrganization(organizationName);
+        const client = await this.getClientForOrganization(organization);
         try {
             return client.getChannel(channelName);
         } catch (error) {
@@ -60,24 +74,25 @@ export class FabricService {
         }
     }
 
-    public async listChannelNameInPeer(peer: string, organizationName: string): Promise<string[]> {
+    public async listChannelNameInPeer(peer: string, organization: Organization, username: string): Promise<string[]> {
         this.logger.info('================= List channel name in peer =================');
-        const client = await this.getClientForOrganization(organizationName);
+        const client = await this.getClientForOrganization(organization);
         if (!client) {
             throw new BadRequestException('Organization not found');
         }
         try {
-            const response = await client.queryChannels(peer, true);
+            await client.setUserContext({ username });
+            const response = await client.queryChannels(peer);
             return response.channels.map(o => o.channel_id);
         } catch (error) {
             throw new BadRequestException(error.toString());
         }
     }
 
-    public async createChannel(channelName: string, organizationName: string) {
+    public async createChannel(channelName: string, organization: Organization) {
         this.logger.info('================= Create channel =================');
-        const client = await this.getClientForOrganization(organizationName);
-        const channel = await this.getChannel(channelName, organizationName);
+        const client = await this.getClientForOrganization(organization);
+        const channel = await this.getChannel(channelName, organization);
         if (!channel) {
             throw new BadRequestException('Channel not exist');
         }
@@ -97,10 +112,11 @@ export class FabricService {
         }
     }
 
-    public async joinChannel(channelName: string, peers: string[], organizationName: string) {
+    public async joinChannel(channelName: string, organization: Organization) {
         this.logger.info('================= Join channel =================');
-        const client = await this.getClientForOrganization(organizationName);
-        const channel = await this.getChannel(channelName, organizationName);
+        const client = await this.getClientForOrganization(organization);
+        const channel = await this.getChannel(channelName, organization);
+        const peers = await this.getPeersNameInOrg(organization);
         const transactionId = client.newTransactionID(true);
         const block = await channel.getGenesisBlock({
             txId: transactionId,
@@ -117,12 +133,13 @@ export class FabricService {
     }
 
     /**
-     * Channel Management
+     * Chaincode Management
      */
 
-    public async installChaincode(organizationName: string, peers: string[]) {
+    public async installChaincode(organization: Organization) {
         this.logger.info('================= Install chaincode =================');
-        const client = await this.getClientForOrganization(organizationName);
+        const client = await this.getClientForOrganization(organization);
+        const peers = await this.getPeersNameInOrg(organization);
         const [response] = await client.installChaincode({
             targets: peers,
             chaincodePath: `/home/server/artifacts/src/github.com/example_cc/node`,
@@ -261,8 +278,10 @@ export class FabricService {
         args: string[],
         fcn: string,
         organizationName: string,
+        username: string,
     ): Promise<string> {
         const client = await this.getClientForOrganization(organizationName);
+        await client.setUserContext({ username });
         const channel = client.getChannel(channelName);
         if (!channel) {
             throw new BadRequestException('Channel not found');
