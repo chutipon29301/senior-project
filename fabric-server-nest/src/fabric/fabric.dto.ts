@@ -38,8 +38,6 @@ export class InstallChaincodeDto {
 
 // tslint:disable-next-line: max-classes-per-file
 export class InvokeChaincodeDto {
-    @IsArray()
-    peers: string[];
 
     @IsString()
     channelName: string;
@@ -66,9 +64,6 @@ export class QueryChaincodeParamDto {
 
 // tslint:disable-next-line: max-classes-per-file
 export class QueryChaincodeQueryDto {
-    @IsString()
-    peer: string;
-
     @IsString()
     args: string;
 }

@@ -51,11 +51,10 @@ export class FabricController {
     @Get('chaincode/:channelName/:chaincodeName/:functionName')
     public async queryChaincode(
         @Param() { channelName, chaincodeName, functionName }: QueryChaincodeParamDto,
-        @Query() { peer, args }: QueryChaincodeQueryDto,
+        @Query() { args }: QueryChaincodeQueryDto,
         @RequestUser() { id, organization }: User,
     ) {
         return this.fabricService.queryChaincode(
-            peer,
             channelName,
             chaincodeName,
             JSON.parse(decodeURI(args)),
@@ -90,8 +89,8 @@ export class FabricController {
 
     @Orgs()
     @Post('chaincode/invoke')
-    public async invokeChaincode(@RequestUser() { organization }: User, @Body() { peers, channelName, fcn, args }: InvokeChaincodeDto) {
-        return this.fabricService.invokeChaincode(peers, channelName, fcn, args, organization);
+    public async invokeChaincode(@RequestUser() { organization, id }: User, @Body() { channelName, fcn, args }: InvokeChaincodeDto) {
+        return this.fabricService.invokeChaincode(channelName, fcn, args, organization, id);
     }
 
 }

@@ -168,14 +168,18 @@ export class FabricService {
             txId,
             'endorsement-policy': {
                 identities: [
-                    { role: { name: 'member', mspId: 'Org1MSP' } },
-                    { role: { name: 'member', mspId: 'Org2MSP' } },
+                    { role: { name: 'member', mspId: 'BuildingMSP' } },
+                    { role: { name: 'member', mspId: 'PVMSP' } },
+                    { role: { name: 'member', mspId: 'UtilityMSP' } },
                 ],
                 policy: {
-                    '2-of': [{ 'signed-by': 0 }, { 'signed-by': 1 }],
+                    '1-of': [
+                        { 'signed-by': 0 },
+                        { 'signed-by': 1 },
+                    ],
                 },
             },
-        });
+        }, 60000);
 
         const allGood = proposalResponses.reduce((previous, current) =>
             (previous &&
@@ -216,15 +220,17 @@ export class FabricService {
     }
 
     public async invokeChaincode(
-        peers: string[],
         channelName: string,
         fcn: string,
         args: string[],
-        organizationName: string,
+        organization: Organization,
+        username: string,
     ) {
         this.logger.info('================= Invoke chaincode =================');
-        const client = await this.getClientForOrganization(organizationName);
+        const client = await this.getClientForOrganization(organization);
+        await client.setUserContext({ username });
         const channel = client.getChannel(channelName);
+        const peers = await this.getPeersNameInOrg(organization);
         const txId = client.newTransactionID(true);
         const [proposalResponses, proposal] = await channel.sendTransactionProposal({
             targets: peers,
@@ -240,54 +246,59 @@ export class FabricService {
             ), true);
         if (allGood) {
             const eventHubs = channel.getChannelEventHubsForOrg();
-            await Promise.all([
-                ...eventHubs.map(eventHub => {
-                    const eventTimeout = setTimeout(() => {
-                        eventHub.disconnect();
-                    }, 60000);
-                    return new Promise((resolve, reject) => {
-                        eventHub.registerTxEvent(txId.getTransactionID(), (transactionId: string, code: string, blockNumber: number) => {
-                            clearTimeout(eventTimeout);
-                            if (code !== 'VALID') {
-                                reject(new Error());
-                            } else {
-                                resolve();
-                            }
-                        }, (error) => {
-                            clearTimeout(eventTimeout);
-                            reject(error);
-                        }, {
-                            unregister: true, disconnect: true,
+            try {
+                await Promise.all([
+                    ...eventHubs.map(eventHub => {
+                        const eventTimeout = setTimeout(() => {
+                            eventHub.disconnect();
+                        }, 60000);
+                        return new Promise((resolve, reject) => {
+                            eventHub.registerTxEvent(txId.getTransactionID(), (transactionId: string, code: string, blockNumber: number) => {
+                                clearTimeout(eventTimeout);
+                                if (code !== 'VALID') {
+                                    reject(new Error());
+                                } else {
+                                    resolve();
+                                }
+                            }, (error) => {
+                                clearTimeout(eventTimeout);
+                                reject(error);
+                            }, {
+                                unregister: true, disconnect: true,
+                            });
+                            eventHub.connect();
                         });
-                        eventHub.connect();
-                    });
-                }),
-                channel.sendTransaction({
-                    txId,
-                    proposalResponses: proposalResponses as ProposalResponse[],
-                    proposal,
-                }),
-            ]);
+                    }),
+                    channel.sendTransaction({
+                        txId,
+                        proposalResponses: proposalResponses as ProposalResponse[],
+                        proposal,
+                    }),
+                ]);
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 
     public async queryChaincode(
-        peer: string,
         channelName: string,
         chaincodeName: string,
         args: string[],
         fcn: string,
-        organizationName: string,
+        organization: Organization,
         username: string,
     ): Promise<string> {
-        const client = await this.getClientForOrganization(organizationName);
+        this.logger.info('================= Query chaincode =================');
+        const client = await this.getClientForOrganization(organization);
         await client.setUserContext({ username });
+        const targets = await this.getPeersNameInOrg(organization);
         const channel = client.getChannel(channelName);
         if (!channel) {
             throw new BadRequestException('Channel not found');
         }
         const responsePayloads = await channel.queryByChaincode({
-            targets: [peer],
+            targets,
             chaincodeId: chaincodeName,
             fcn,
             args,
