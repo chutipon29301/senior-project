@@ -5,18 +5,6 @@ export class CreateUserDto {
     username: string;
 }
 
-// tslint:disable-next-line: max-classes-per-file
-export class CreateChannelDto {
-    @IsString()
-    channelName: string;
-}
-
-// tslint:disable-next-line: max-classes-per-file
-export class JoinChannelDto {
-
-    @IsString()
-    channelName: string;
-}
 
 // tslint:disable-next-line: max-classes-per-file
 export class GetChannelNameDto {
@@ -39,8 +27,6 @@ export class InstallChaincodeDto {
 // tslint:disable-next-line: max-classes-per-file
 export class InvokeChaincodeDto {
 
-    @IsString()
-    channelName: string;
 
     @IsString()
     fcn: string;

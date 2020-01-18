@@ -10,6 +10,8 @@ import { Organization } from '../entity/User.entity';
 @Injectable()
 export class FabricService {
 
+    private readonly channelName = 'mychannel';
+
     constructor(
         @Inject(WINSTON) private readonly logger: Logger,
         private readonly configService: ConfigService,
@@ -64,11 +66,11 @@ export class FabricService {
      * Channel Management
      */
 
-    public async getChannel(channelName: string, organization: Organization): Promise<Channel | null> {
+    public async getChannel(organization: Organization): Promise<Channel | null> {
         this.logger.info('================= Get channel =================');
         const client = await this.getClientForOrganization(organization);
         try {
-            return client.getChannel(channelName);
+            return client.getChannel(this.channelName);
         } catch (error) {
             return null;
         }
@@ -89,20 +91,20 @@ export class FabricService {
         }
     }
 
-    public async createChannel(channelName: string, organization: Organization) {
+    public async createChannel(organization: Organization) {
         this.logger.info('================= Create channel =================');
         const client = await this.getClientForOrganization(organization);
-        const channel = await this.getChannel(channelName, organization);
+        const channel = await this.getChannel(organization);
         if (!channel) {
             throw new BadRequestException('Channel not exist');
         }
-        const envelope = readFileSync(`/home/server/artifacts/channel/${channelName}.tx`);
+        const envelope = readFileSync(`/home/server/artifacts/channel/${this.channelName}.tx`);
         const channelConfig = client.extractChannelConfig(envelope);
         const signature = client.signChannelConfig(channelConfig);
         const request = {
             config: channelConfig,
             signatures: [signature],
-            name: channelName,
+            name: this.channelName,
             txId: client.newTransactionID(true),
         };
         const result = await client.createChannel(request as ChannelRequest);
@@ -112,10 +114,10 @@ export class FabricService {
         }
     }
 
-    public async joinChannel(channelName: string, organization: Organization) {
+    public async joinChannel(organization: Organization) {
         this.logger.info('================= Join channel =================');
         const client = await this.getClientForOrganization(organization);
-        const channel = await this.getChannel(channelName, organization);
+        const channel = await this.getChannel(organization);
         const peers = await this.getPeersNameInOrg(organization);
         const transactionId = client.newTransactionID(true);
         const block = await channel.getGenesisBlock({
@@ -154,12 +156,11 @@ export class FabricService {
     }
 
     public async instantiateChaincode(
-        channelName: string,
         organizationName: string,
     ) {
         this.logger.info('================= Instantiate chaincode =================');
         const client = await this.getClientForOrganization(organizationName);
-        const channel = client.getChannel(channelName);
+        const channel = client.getChannel(this.channelName);
         const txId = client.newTransactionID(true);
         const [proposalResponses, proposal] = await channel.sendInstantiateProposal({
             'chaincodeId': 'mycc',
@@ -220,7 +221,6 @@ export class FabricService {
     }
 
     public async invokeChaincode(
-        channelName: string,
         fcn: string,
         args: string[],
         organization: Organization,
@@ -229,7 +229,7 @@ export class FabricService {
         this.logger.info('================= Invoke chaincode =================');
         const client = await this.getClientForOrganization(organization);
         await client.setUserContext({ username });
-        const channel = client.getChannel(channelName);
+        const channel = client.getChannel(this.channelName);
         const peers = await this.getPeersNameInOrg(organization);
         const txId = client.newTransactionID(true);
         const [proposalResponses, proposal] = await channel.sendTransactionProposal({
@@ -282,7 +282,6 @@ export class FabricService {
     }
 
     public async queryChaincode(
-        channelName: string,
         chaincodeName: string,
         args: string[],
         fcn: string,
@@ -293,7 +292,7 @@ export class FabricService {
         const client = await this.getClientForOrganization(organization);
         await client.setUserContext({ username });
         const targets = await this.getPeersNameInOrg(organization);
-        const channel = client.getChannel(channelName);
+        const channel = client.getChannel(this.channelName);
         if (!channel) {
             throw new BadRequestException('Channel not found');
         }

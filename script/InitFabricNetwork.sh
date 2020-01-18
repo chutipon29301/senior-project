@@ -73,10 +73,7 @@ echo "\n\n============== Config channel ==============\n"
 CREATE_CHANNEL_RESPONSE=$(curl -o /dev/null -s -w "%{http_code}\n" -s -X POST \
   $URL/fabric/channel \
   -H "content-type: application/json" \
-  -H "authorization: Bearer $BUILDING_TOKEN" \
-  -d '{
-    "channelName": "mychannel"
-  }'
+  -H "authorization: Bearer $BUILDING_TOKEN"
 )
 
 echo "Create channel:\t\t\t\t $CREATE_CHANNEL_RESPONSE"
@@ -84,20 +81,14 @@ echo "Create channel:\t\t\t\t $CREATE_CHANNEL_RESPONSE"
 BUILDING_JOIN_CHANNEL_RESPONSE=$(curl -o /dev/null -s -w "%{http_code}\n" -s -X POST \
   $URL/fabric/channel/join \
   -H "content-type: application/json" \
-  -H "authorization: Bearer $BUILDING_TOKEN" \
-  -d '{
-    "channelName": "mychannel"
-  }'
+  -H "authorization: Bearer $BUILDING_TOKEN"
 )
 echo "Building org join channel:\t\t $BUILDING_JOIN_CHANNEL_RESPONSE"
 
 PV_JOIN_CHANNEL_RESPONSE=$(curl -o /dev/null -s -w "%{http_code}\n" -s -X POST \
   $URL/fabric/channel/join \
   -H "content-type: application/json" \
-  -H "authorization: Bearer $PV_TOKEN" \
-  -d '{
-    "channelName": "mychannel"
-  }'
+  -H "authorization: Bearer $PV_TOKEN"
 )
 
 echo "PV org join channel:\t\t\t $PV_JOIN_CHANNEL_RESPONSE"
@@ -105,10 +96,7 @@ echo "PV org join channel:\t\t\t $PV_JOIN_CHANNEL_RESPONSE"
 UTILITY_JOIN_CHANNEL_RESPONSE=$(curl -o /dev/null -s -w "%{http_code}\n" -s -X POST \
   $URL/fabric/channel/join \
   -H "content-type: application/json" \
-  -H "authorization: Bearer $UTILITY_TOKEN" \
-  -d '{
-    "channelName": "mychannel"
-  }'
+  -H "authorization: Bearer $UTILITY_TOKEN"
 )
 
 echo "Utility org join channel:\t\t $UTILITY_JOIN_CHANNEL_RESPONSE"
@@ -144,10 +132,7 @@ echo "\n\n========== Instantiate chaincode ===========\n"
 INSTANTIATE_CHAINCODE_RESPONSE=$(curl -o /dev/null -s -w "%{http_code}\n" -s -X POST \
   $URL/fabric/chaincode/instantiate \
   -H "content-type: application/json" \
-  -H "authorization: Bearer $UTILITY_TOKEN" \
-  -d '{
-    "channelName": "mychannel"
-  }'
+  -H "authorization: Bearer $UTILITY_TOKEN"
 )
 echo "Instantiate chaincode:\t\t\t $INSTANTIATE_CHAINCODE_RESPONSE"
 
