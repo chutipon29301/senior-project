@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { SellTransaction } from './SellTransaction.entity';
 import { BuyTransaction } from './BuyTransaction.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 export default class Round {
@@ -13,13 +14,19 @@ export default class Round {
     @Column()
     endDate: Date;
 
-    @Column('float')
+    @Column('float', {
+        nullable: true,
+    })
     MTI: number;
 
-    @Column('float')
+    @Column('float', {
+        nullable: true,
+    })
     marketPrice: number;
 
-    @Column()
+    @Column({
+        default: true,
+    })
     isActive: boolean;
 
     @OneToMany(_ => SellTransaction, sellerTransaction => sellerTransaction.round)

@@ -307,6 +307,13 @@ export class FabricService {
     }
 
     /**
+     * Chaincode function
+     */
+
+    public async createRound(id: string, organization: Organization, username: string) {
+        await this.invokeChaincode('createRound', [id, (new Date()).toISOString()], organization, username);
+    }
+    /**
      * Private functions
      */
 
