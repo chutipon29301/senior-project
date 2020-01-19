@@ -313,6 +313,15 @@ export class FabricService {
     public async createRound(id: string, organization: Organization, username: string) {
         await this.invokeChaincode('createRound', [id, (new Date()).toISOString()], organization, username);
     }
+
+    public async addSellerBid(roundId: string, price: number, organization: Organization, username: string) {
+        await this.invokeChaincode('addSellerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
+    }
+
+    public async addBuyerBid(roundId: string, price: number, organization: Organization, username: string) {
+        await this.invokeChaincode('addSellerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
+    }
+
     /**
      * Private functions
      */
