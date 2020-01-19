@@ -1,9 +1,10 @@
-import { Module, HttpModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { OfferService } from './offer.service';
 import { OfferController } from './offer.controller';
+import { FabricModule } from '../fabric/fabric.module';
 
 @Module({
-  imports: [HttpModule],
+  imports: [FabricModule],
   providers: [OfferService],
   controllers: [OfferController]
 })

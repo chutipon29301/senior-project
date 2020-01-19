@@ -1,9 +1,9 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsPositive, IsString } from 'class-validator';
 
-export class OfferDto {
-    @IsString()
-    id: string;
-
-    @IsNumber()
+export class CreateOfferDto {
+    @IsPositive()
     price: number;
+
+    @IsString()
+    roundId: string;
 }
