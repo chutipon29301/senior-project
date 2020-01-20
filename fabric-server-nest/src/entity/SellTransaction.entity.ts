@@ -11,7 +11,13 @@ export class SellTransaction {
     ssi: number;
 
     @Column('float')
-    soldPrice: number;
+    averageSoldPrice: number;
+
+    @Column('float')
+    totalSoldPrice: number;
+
+    @Column('float')
+    utilityIndex: number;
 
     @ManyToOne(_ => User, user => user.sellTransactions)
     user: User;
