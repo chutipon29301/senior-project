@@ -37,58 +37,77 @@ var Chaincode = class {
   }
 
   async createRound(stub, args) {
-    if (args.length != 2) {
+    if (args.length !== 2) {
       throw new Error('Incorrect number of arguments. Expecting 2');
     }
-    const id = args[0];
-    const modifyDate = args[1];
+    const [id, modifyDate] = args;
     await stub.putState(id, Buffer.from(JSON.stringify({
-      buy: [],
-      sell: [],
-      result: [],
-      modifyDate: '',
+      buyerBids: [],
+      sellerBids: [],
+      invoices: [],
+      modifyDate,
     })));
   }
 
   async addSellerBid(stub, args) {
-    if (args.length != 4) {
+    if (args.length !== 4) {
       throw new Error('Incorrect number of arguments. Expecting 4');
     }
-    const roundId = args[0];
-    const sellerId = args[1];
-    const price = args[2];
-    const timestamp = args[3];
+    const [roundId, sellerId, price, timestamp] = args;
     const result = await stub.getState(roundId);
     if (!result) {
       throw new Error(`Result with id ${roundId} not found`);
     }
     const resultObject = JSON.parse(result.toString());
-    resultObject.sell.push({
-      id: sellerId,
-      price,
-      timestamp,
-    });
+    resultObject.modifyDate = timestamp;
+    const seller = result.sellerBids.find(o => o.id === sellerId);
+    if (seller) {
+      seller.price = price;
+      seller.timestamp = timestamp;
+    } else {
+      resultObject.sellerBids.push({
+        id: sellerId,
+        price,
+        timestamp,
+      });
+    }
     await stub.putState(roundId, Buffer.from(JSON.stringify(resultObject)));
   }
 
   async addBuyerBid(stub, args) {
-    if (args.length != 4) {
+    if (args.length !== 4) {
       throw new Error('Incorrect number of arguments. Expecting 4');
     }
-    const roundId = args[0];
-    const buyerId = args[1];
-    const price = args[2];
-    const timestamp = args[3];
+    const [roundId, buyerId, price, timestamp] = args;
     const result = await stub.getState(roundId);
     if (!result) {
       throw new Error(`Result with id ${roundId} not found`);
     }
     const resultObject = JSON.parse(result.toString());
-    resultObject.buy.push({
-      id: buyerId,
-      price,
-      timestamp,
-    });
+    resultObject.modifyDate = timestamp;
+    const buyer = result.buyerBids.find(o => o.id === buyerId);
+    if (buyer) {
+      buyer.price = price;
+      buyer.timestamp = timestamp;
+    } else {
+      resultObject.buyerBids.push({
+        id: buyerId,
+        price,
+        timestamp,
+      });
+    }
+    await stub.putState(roundId, Buffer.from(JSON.stringify(resultObject)));
+  }
+
+  async setInvoice(stub, args) {
+    const [roundId, invoices] = args;
+    const result = await stub.getState(roundId);
+    if (!result) {
+      throw new Error(`Result with id ${roundId} not found`);
+    }
+    const resultObject = JSON.parse(result.toString());
+    const invoicesObject = JSON.parse(invoices);
+    resultObject.invoices = invoicesObject;
     await stub.putState(roundId, Buffer.from(JSON.stringify(resultObject)));
   }
 
