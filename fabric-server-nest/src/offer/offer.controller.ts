@@ -11,17 +11,9 @@ export class OfferController {
     constructor(private readonly service: OfferService) { }
 
     @Orgs(Organization.Building, Organization.PV)
-    @Post('')
-    public async createOffer(@RequestUser() user: User, @Body() { price, roundId }: CreateOfferDto) {
-        
+    @Post()
+    public async createOffer(@RequestUser() { organization, id }: User, @Body() { price, roundId }: CreateOfferDto) {
+        return this.service.createOffer(roundId, price, organization, id);
     }
 
-    // @Post('pv')
-    // public async createSellerOffer(@Body() { id, price }: OfferDto) {
-    //     this.service.sendPvOffer(id, price);
-    // }
-    // @Post('building')
-    // public async createBuyerOffer(@Body() { id, price }: OfferDto) {
-    //     this.service.sendBuildingOffer(id, price);
-    // }
 }

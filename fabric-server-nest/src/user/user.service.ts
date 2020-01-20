@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import User, { Organization } from '../entity/User.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FabricService } from '../fabric/fabric.service';
 
 @Injectable()
-export class UserService extends TypeOrmCrudService<User> {
+export class UserService {
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         private readonly fabricService: FabricService,
-    ) {
-        super(userRepository);
-    }
+    ) { }
 
     public async createUser(name: string, organization: Organization): Promise<User> {
         const user = new User();
@@ -21,6 +18,10 @@ export class UserService extends TypeOrmCrudService<User> {
         await this.userRepository.save(user);
         await this.fabricService.createUser(user.id, user.organization);
         return user;
+    }
+
+    public async findOne(id: string): Promise<User> {
+        return this.userRepository.findOne(id);
     }
 
 }
