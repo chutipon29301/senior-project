@@ -17,7 +17,7 @@ export default class Round {
     @Column('float', {
         nullable: true,
     })
-    MTI: number;
+    mti: number;
 
     @Column('float', {
         nullable: true,
