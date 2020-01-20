@@ -25,8 +25,6 @@
     "@nestjs/jwt": "^6.1.1",
     "@nestjs/platform-express": "^6.0.0",
     "@nestjs/typeorm": "^6.2.0",
-    "@nestjsx/crud": "^4.4.1",
-    "@nestjsx/crud-typeorm": "^4.4.1",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
     "fabric-client": "^1.4.4",
