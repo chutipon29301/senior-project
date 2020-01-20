@@ -2,7 +2,6 @@ import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WinstonModule } from 'nest-winston';
-import { FabricTempModule } from './fabric-temp/fabric-temp.module';
 import { OfferModule } from './offer/offer.module';
 import { RoundModule } from './round/round.module';
 import { TradeModule } from './trade/trade.module';
@@ -38,7 +37,6 @@ import { AuthHeaderParserMiddleware } from './middleware/auth-header-parser.midd
       }),
     }),
     UserModule,
-    FabricTempModule,
     ConfigModule,
     OfferModule,
     RoundModule,
