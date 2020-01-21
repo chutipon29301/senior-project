@@ -13,13 +13,25 @@ export class RoundService {
         private readonly fabricService: FabricService,
     ) { }
 
-    public async createRound(startDate: Date, endDate: Date, user: User): Promise<Round> {
+    public async createRound(startDate: Date, endDate: Date, {organization, id}: User): Promise<Round> {
         const round = new Round();
         round.startDate = startDate;
         round.endDate = endDate;
         await this.roundRepository.save(round);
-        await this.fabricService.createRound(round.id, user.organization, user.id);
+        await this.fabricService.createRound(round.id, organization, id);
         return round;
     }
+
+    public async listRounds(): Promise<Round[]> {
+        return this.roundRepository.find();
+    }
+
+    public async getChaincodeInRound(roundId: string, { organization, id }: User) {
+        return this.fabricService.getChaincode(roundId, organization, id);
+    }
+
+    // public async getRound(roundId: string) {
+    //     this.fabricService.
+    // }
 
 }

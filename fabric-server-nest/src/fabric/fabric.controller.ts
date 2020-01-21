@@ -1,13 +1,7 @@
 import { Controller, Post, Param, Get, Body, Query } from '@nestjs/common';
 import { FabricService } from './fabric.service';
-import {
-    InstallChaincodeDto,
-    InvokeChaincodeDto,
-    QueryChaincodeParamDto,
-    QueryChaincodeQueryDto,
-    InstantiateChaincodeDto,
-} from './fabric.dto';
-import User, { Organization } from '../entity/User.entity';
+import { InvokeChaincodeDto, QueryChaincodeParamDto, QueryChaincodeQueryDto } from './fabric.dto';
+import User from '../entity/User.entity';
 import { Orgs } from '../decorator/org.decorator';
 import { RequestUser } from '../decorator/user.decorator';
 
@@ -46,14 +40,13 @@ export class FabricController {
     }
 
     @Orgs()
-    @Get('chaincode/:chaincodeName/:functionName')
+    @Get('chaincode/:functionName')
     public async queryChaincode(
-        @Param() { chaincodeName, functionName }: QueryChaincodeParamDto,
+        @Param() { functionName }: QueryChaincodeParamDto,
         @Query() { args }: QueryChaincodeQueryDto,
         @RequestUser() { id, organization }: User,
     ) {
         return this.fabricService.queryChaincode(
-            chaincodeName,
             JSON.parse(decodeURI(args)),
             functionName,
             organization,

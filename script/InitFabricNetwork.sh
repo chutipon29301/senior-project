@@ -10,7 +10,7 @@ URL="http://localhost:3000"
 echo "=============== Create user ================\n"
 
 BUILDING_ID=$(echo $(curl -s -X POST \
-  $URL/user/create \
+  $URL/user \
   -H "content-type: application/json" \
   -d '{
     "name": "Building1",
@@ -20,7 +20,7 @@ BUILDING_ID=$(echo $(curl -s -X POST \
 echo "BuildingID:\t $BUILDING_ID"
 
 PV_ID=$(echo $(curl -s -X POST \
-  $URL/user/create \
+  $URL/user \
   -H "content-type: application/json" \
   -d '{
     "name": "Pv1",
@@ -30,7 +30,7 @@ PV_ID=$(echo $(curl -s -X POST \
 echo "PVID:\t\t $PV_ID"
 
 UTILITY_ID=$(echo $(curl -s -X POST \
-  $URL/user/create \
+  $URL/user \
   -H "content-type: application/json" \
   -d '{
     "name": "Utility1",

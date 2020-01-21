@@ -7,7 +7,7 @@ import { CreateUserDto } from './user.dto';
 export class UserController {
     constructor(readonly service: UserService) { }
 
-    @Post('create')
+    @Post()
     public async createUser(@Body() { name, organizationName }: CreateUserDto): Promise<User> {
         return this.service.createUser(name, organizationName);
     }
