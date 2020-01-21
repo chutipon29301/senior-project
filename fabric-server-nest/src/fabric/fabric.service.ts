@@ -6,11 +6,13 @@ import { ConfigService } from '../config/config.service';
 import { readFileSync } from 'fs';
 import { ChannelRequest, Channel, ProposalResponse } from 'fabric-client';
 import { Organization } from '../entity/User.entity';
+import { ChaincodeRoundDto } from './fabric.dto';
 
 @Injectable()
 export class FabricService {
 
     private readonly channelName = 'mychannel';
+    private readonly chaincodeName = 'mycc';
 
     constructor(
         @Inject(WINSTON) private readonly logger: Logger,
@@ -145,7 +147,7 @@ export class FabricService {
         const [response] = await client.installChaincode({
             targets: peers,
             chaincodePath: `/home/server/artifacts/src/github.com/example_cc/node`,
-            chaincodeId: 'mycc',
+            chaincodeId: this.chaincodeName,
             chaincodeVersion: 'v0',
             chaincodeType: 'node',
         });
@@ -163,7 +165,7 @@ export class FabricService {
         const channel = client.getChannel(this.channelName);
         const txId = client.newTransactionID(true);
         const [proposalResponses, proposal] = await channel.sendInstantiateProposal({
-            'chaincodeId': 'mycc',
+            'chaincodeId': this.chaincodeName,
             'chaincodeType': 'node',
             'chaincodeVersion': 'v0',
             txId,
@@ -180,7 +182,7 @@ export class FabricService {
                     ],
                 },
             },
-        }, 60000);
+        }, 360000);
 
         const allGood = proposalResponses.reduce((previous, current) =>
             (previous &&
@@ -282,7 +284,6 @@ export class FabricService {
     }
 
     public async queryChaincode(
-        chaincodeName: string,
         args: string[],
         fcn: string,
         organization: Organization,
@@ -298,7 +299,7 @@ export class FabricService {
         }
         const responsePayloads = await channel.queryByChaincode({
             targets,
-            chaincodeId: chaincodeName,
+            chaincodeId: this.chaincodeName,
             fcn,
             args,
         }, true);
@@ -320,6 +321,12 @@ export class FabricService {
 
     public async addBuyerBid(roundId: string, price: number, organization: Organization, username: string) {
         await this.invokeChaincode('addSellerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
+    }
+
+    public async getChaincode(id: string, organization: Organization, username: string): Promise<ChaincodeRoundDto> {
+        const result = await this.queryChaincode([id], 'getRound', organization, username);
+        const resultObject = JSON.parse(result) as ChaincodeRoundDto;
+        return resultObject;
     }
 
     /**
