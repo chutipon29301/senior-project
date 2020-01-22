@@ -320,7 +320,7 @@ export class FabricService {
     }
 
     public async addBuyerBid(roundId: string, price: number, organization: Organization, username: string) {
-        await this.invokeChaincode('addSellerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
+        await this.invokeChaincode('addBuyerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
     }
 
     public async getChaincode(id: string, organization: Organization, username: string): Promise<ChaincodeRoundDto> {
