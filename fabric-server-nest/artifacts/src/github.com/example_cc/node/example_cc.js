@@ -60,7 +60,7 @@ var Chaincode = class {
     }
     const resultObject = JSON.parse(result.toString());
     resultObject.modifyDate = timestamp;
-    const seller = result.sellerBids.find(o => o.id === sellerId);
+    const seller = resultObject.sellerBids.find(o => o.id === sellerId);
     if (seller) {
       seller.price = price;
       seller.timestamp = timestamp;
@@ -85,7 +85,7 @@ var Chaincode = class {
     }
     const resultObject = JSON.parse(result.toString());
     resultObject.modifyDate = timestamp;
-    const buyer = result.buyerBids.find(o => o.id === buyerId);
+    const buyer = resultObject.buyerBids.find(o => o.id === buyerId);
     if (buyer) {
       buyer.price = price;
       buyer.timestamp = timestamp;
