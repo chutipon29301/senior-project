@@ -55,6 +55,7 @@ pytz==2019.3
 PyYAML==5.3     
 ray==0.8.0   
 redis==3.3.11  
+requests==2.22.0 
 scipy==1.4.1   
 setuptools==44.0.0  
 six==1.13.0  
