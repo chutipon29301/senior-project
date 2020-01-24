@@ -39,15 +39,14 @@ class MultiAgentTrainingEnv(gym.Env):
         The underlying market engine object.
     """
     def __init__(self, rl_agents, fixed_agents, setting, max_steps=30):
-        print("call init multiagent")
-        loadService=StaticDataService()
-        self.num_round=loadService.num_round
+        self.iterate_round=0
         self.rl_agents = {
             rl_agent.name: rl_agent for rl_agent in rl_agents
         }
         self.fixed_agents = {
             fixed_agent.name: fixed_agent for fixed_agent in fixed_agents
         }
+
         self.all_agents = {}
         self.all_agents.update(self.rl_agents)
         self.all_agents.update(self.fixed_agents)
@@ -75,9 +74,9 @@ class MultiAgentTrainingEnv(gym.Env):
             for agent in self.all_agents.values()
             if agent.role == 'seller'
         ]
+
         self.market = MarketEngine(buyer_ids, seller_ids, max_steps)
-
-
+    
     def _get_rewards(self, agent_ids, deals):
         """
         Compute the reward of each agent given the deals in the last round.
@@ -128,25 +127,8 @@ class MultiAgentTrainingEnv(gym.Env):
             Contains additionally a string key ``__all__`` to indicate
             whether every agent is done.
         """
-# ===========================================================================
-#         df=pd.read_csv('/home/bidding-strategy/data/data.csv')
-# #         hr_df=df.loc[df['Time'] == '08:00']
-#         hr_df=df.loc[randint(0, 23)]
         print("multi agent actions:",actions)
-#         buyer_q=[float(hr_df[name]) for (price, name) in bids]
-#         seller_q=[float(hr_df[name]) for (price, name) in asks]
-#         buyers=[{
-#             'id': bids[i][1],
-#             'quantity':buyer_q[i],
-#             'bidPrice':bids[i][0],
-#             'timestamp':datetime.datetime.now().isoformat()
-#         } for i in range(len(bids))]
-#         sellers=[{'id':asks[j][1],
-#                   'quantity':seller_q[j],
-#                   'bidPrice':asks[j][0],
-#                   'timestamp':datetime.datetime.now().isoformat()
-#         } for j in range(len(asks))]
-# ===========================================================================
+        print(self.iterate_round)
         # Get dict of fixed agents that aren't yet done
         other_agents = {
             agent.name: agent for agent in self.fixed_agents.values()
@@ -155,19 +137,25 @@ class MultiAgentTrainingEnv(gym.Env):
         # First get offers of other fixed agents
         obs = self.setting.get_states(other_agents.keys(), self.market)
         offers = {
-            agent.name: agent.get_offer(obs[agent.name])
+            agent.name: {'price': agent.get_offer(obs[agent.name]), 'quantity': self.setting.getAgentQuantity(self.iterate_round,agent.name)}
             for agent in other_agents.values()
         }
 
         # Update offers with RL offers from the actions dict
         rl_agent_ids = set(actions.keys())
         for rl_agent_id in rl_agent_ids:
-            offers[rl_agent_id] = self.rl_agents[rl_agent_id].action_to_price(
-                actions[rl_agent_id]
-            )
+            offers[rl_agent_id] = {
+                'price':self.rl_agents[rl_agent_id].action_to_price(
+                    actions[rl_agent_id]
+                ),
+                
+                'quantity': self.setting.getAgentQuantity(self.iterate_round,rl_agent_id)
+            }
 
         # Step the market
         deals = self.market.step(offers)
+
+        self.iterate_round+=1
 
         # Obs, done, rewards for RL agents
         obs = self.rl_setting.get_states(rl_agent_ids, self.market)
@@ -207,14 +195,12 @@ class SingleAgentTrainingEnv(MultiAgentTrainingEnv):
     def __init__(self, rl_agent, fixed_agents, setting, max_steps=30):
         self.rl_agent = rl_agent
         self.action_space = Discrete(rl_agent.discretization)
-        print(max_steps)
         super().__init__([rl_agent], fixed_agents, setting, max_steps)
 
     def reset(self):
         return super().reset()[self.rl_agent.name]
 
     def step(self, action):
-        print("step~")
         obs, rew, done, _ = super().step({
             self.rl_agent.name: action
         })
