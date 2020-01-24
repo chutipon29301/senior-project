@@ -1,5 +1,9 @@
 import numpy as np
-
+import json
+import datetime
+import requests 
+import pandas as pd
+from random import randint
 class MarketEngine:
     """
     Core double auction, single unit market matching enigne
@@ -39,6 +43,7 @@ class MarketEngine:
     """
 
     def __init__(self, buyers, sellers, max_steps=30):
+        print("==================================")
         self.buyers = set(buyers)
         self.sellers = set(sellers)
         self.agents = self.buyers.union(self.sellers)
@@ -54,7 +59,7 @@ class MarketEngine:
         self.deal_history = list()
 
 
-    def step(self, offers):
+    def step(self, offers, mode='train'):
         """
         Compute the next market state given a set of offers.
 
@@ -74,7 +79,7 @@ class MarketEngine:
         """
         bids = []
         asks = []
-
+        
         for agent_id, offer in offers.items():
             if agent_id in self.done:
                 continue
@@ -84,7 +89,7 @@ class MarketEngine:
                 asks.append((offer, agent_id))
             else:
                 raise RuntimeError(f"Received offer from unkown agent {agent_id}")
-
+        
         deals = self.match(bids, asks)
         self.deal_history.append(deals)
         self.offer_history.append((bids, asks))
@@ -92,7 +97,8 @@ class MarketEngine:
 
         for agent_id in deals:
             self.done.add(agent_id)
-
+        print("******************************")
+        print(self.time,self.max_steps)
         if self.time >= self.max_steps \
            or self.buyers.issubset(self.done) \
            or self.sellers.issubset(self.done):
@@ -133,16 +139,45 @@ class MarketEngine:
             agents that were matched will be in this dict. Note: the same deal
             price will appear twice under the buyer and seller id.
         """
-        bids.sort(reverse=True)
-        asks.sort(reverse=False)
+        df=pd.read_csv('/home/jovyan/work/data/data.csv')
+
+        print("******************************")
+#         hr_df=df.loc[df['Time'] == '08:00']
+        hr_df=df.loc[randint(0, 23)]
+
+        buyer_q=[float(hr_df[name]) for (price, name) in bids]
+        seller_q=[float(hr_df[name]) for (price, name) in asks]
+        
+        buyers=[{
+            'id': bids[i][1],
+            'quantity':buyer_q[i],
+            'bidPrice':bids[i][0],
+            'timestamp':datetime.datetime.now().isoformat()
+        } for i in range(len(bids))]
+        sellers=[{'id':asks[j][1],
+                  'quantity':seller_q[j],
+                  'bidPrice':asks[j][0],
+                  'timestamp':datetime.datetime.now().isoformat()
+        } for j in range(len(asks))]
+        data = {"buyers":buyers,"sellers":sellers}
+        API_ENDPOINT = "http://smartcontract.example.com:5000"
+        # url=API_ENDPOINT+'/uniKDA'
+        url=API_ENDPOINT+'/disKDA'
+        # url=API_ENDPOINT+'/weightedAvg'
+        r = requests.post(url = url, json = data) 
+        # extracting response text
+        result = json.loads(r.text)
+        
+#         bids.sort(reverse=True)
+#         asks.sort(reverse=False)
         deals = dict()
         n = min(len(bids), len(asks))
+        
         for (bid, buyer_id), (ask, seller_id) in zip(bids[0:n], asks[0:n]):
-            if bid >= ask:
-                price = (bid + ask)/2
-                deals[buyer_id] = price
-                deals[seller_id] = price
-            else:
-                break
+            deals[buyer_id] = [buyer['avgBoughtPrice'] for buyer in result['buyers'] if buyer['id'] == buyer_id][0]
+            
+            deals[seller_id] = [seller['avgSoldPrice'] for seller in result['sellers'] if seller['id'] == seller_id][0]
+#             else:
+#                 break
         return deals
 
