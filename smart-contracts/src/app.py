@@ -27,10 +27,10 @@ def disKDA():
     print(raw_buyers[0]['bidPrice'])
     for buyer in raw_buyers:
         qWanted+=buyer['quantity']
-        buyers.append(Buyer(buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
+        buyers.append(Buyer(buyer['id'],buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
     for seller in raw_sellers:
         qAvailable+=seller['quantity']
-        sellers.append(Seller(seller['quantity'],seller['bidPrice'],seller['timestamp']))
+        sellers.append(Seller(seller['id'],seller['quantity'],seller['bidPrice'],seller['timestamp']))
     buyers_result,sellers_result=discriminatory_kda(buyers,sellers)
     print(buyers_result,sellers_result)
     # buyers_result = [obj.to_dict() for obj in buyers_result]
@@ -49,9 +49,9 @@ def uniKDA():
     raw_sellers = data['sellers']
     buyers=[];sellers=[]
     for buyer in raw_buyers:
-        buyers.append(Buyer(buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
+        buyers.append(Buyer(buyer['id'],buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
     for seller in raw_sellers:
-        sellers.append(Seller(seller['quantity'],seller['bidPrice'],seller['timestamp']))
+        sellers.append(Seller(seller['id'],seller['quantity'],seller['bidPrice'],seller['timestamp']))
     buyers_result,sellers_result=uniform_kda(buyers,sellers)
     print(buyers_result,sellers_result)
     for buyer in buyers_result:
@@ -68,9 +68,9 @@ def weightedAvg():
     raw_sellers = data['sellers']
     buyers=[];sellers=[]
     for buyer in raw_buyers:
-        buyers.append(Buyer(buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
+        buyers.append(Buyer(buyer['id'],buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
     for seller in raw_sellers:
-        sellers.append(Seller(seller['quantity'],seller['bidPrice'],seller['timestamp']))
+        sellers.append(Seller(seller['id'],seller['quantity'],seller['bidPrice'],seller['timestamp']))
     buyers_result,sellers_result=weighted_avg(buyers,sellers)
     print(buyers_result,sellers_result)
     for buyer in buyers_result:
