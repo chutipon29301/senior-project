@@ -17,7 +17,6 @@ class MarketAgent:
     def __init__(self, role, reservation_price, name=None):
         if not role in ['buyer', 'seller']:
             raise ValueError("Role must be either buyer or seller")
-            print(reservation_price)
         if reservation_price <= 0:
             raise ValueError("Reservation price must be positive")
 
