@@ -4,6 +4,8 @@ import numpy as np
 from biddingModule.agents import UniformRandomAgent, GymRLAgent
 from biddingModule.info_settings import OfferInformationSetting
 from biddingModule.engine import MarketEngine
+from biddingModule.mode_dto import Mode
+
 
 from stable_baselines import A2C, DQN
 from stable_baselines.common.policies import *
@@ -50,26 +52,26 @@ def play_games(agents, setting, n_games=100, max_steps=30):
         for agent in agents
         if agent.role == 'seller'
     ]
-    # buyer_ids_deal =  [
-    #     agent.name+"_deal"
-    #     for agent in agents
-    #     if agent.role == 'buyer'
-    # ]
-    # seller_ids_deal =  [
-    #     agent.name+"_deal"
-    #     for agent in agents
-    #     if agent.role == 'seller'
-    # ]
-    # buyer_ids_resev =  [
-    #     agent.name+"_resev"
-    #     for agent in agents
-    #     if agent.role == 'buyer'
-    # ]
-    # seller_ids_resev =  [
-    #     agent.name+"_resev"
-    #     for agent in agents
-    #     if agent.role == 'seller'
-    # ]
+    buyer_ids_deal =  [
+        agent.name+"_deal"
+        for agent in agents
+        if agent.role == 'buyer'
+    ]
+    seller_ids_deal =  [
+        agent.name+"_deal"
+        for agent in agents
+        if agent.role == 'seller'
+    ]
+    buyer_ids_resev =  [
+        agent.name+"_resev"
+        for agent in agents
+        if agent.role == 'buyer'
+    ]
+    seller_ids_resev =  [
+        agent.name+"_resev"
+        for agent in agents
+        if agent.role == 'seller'
+    ]
     ids = set(buyer_ids+ seller_ids)
     # ids_info=set(buyer_ids_deal + seller_ids_deal+ buyer_ids_resev + seller_ids_resev)
     market = MarketEngine(buyer_ids, seller_ids, max_steps=max_steps)
@@ -84,7 +86,7 @@ def play_games(agents, setting, n_games=100, max_steps=30):
                 if agent.name not in market.done
             ]
             offers = {
-                agent.name: agent.get_offer(observations[agent.name])
+                agent.name: {'price': agent.get_offer(observations[agent.name]), 'quantity': setting.getAgentQuantity(game_idx,agent.name)}
                 for agent in unmatched_agents
             }
             deals = market.step(offers)
@@ -94,4 +96,4 @@ def play_games(agents, setting, n_games=100, max_steps=30):
                 # rewards[agent.name+"_resev"][game_idx] = get_reward(agent, deals)[2]
         market.reset()
     return rewards.reindex(sorted(rewards.columns), axis=1)
-print(play_games(fixed_agents + [rl_agent], setting, 10))
+print(play_games(fixed_agents + [rl_agent], setting, 10).describe())
