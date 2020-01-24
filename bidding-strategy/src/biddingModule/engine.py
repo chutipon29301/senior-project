@@ -80,12 +80,13 @@ class MarketEngine:
         asks = []
         
         for agent_id, offer in offers.items():
+            # print("offer:",offer)
             if agent_id in self.done:
                 continue
             elif agent_id in self.buyers:
-                bids.append((offer, agent_id))
+                bids.append((offer['price'], offer['quantity'], agent_id))
             elif agent_id in self.sellers:
-                asks.append((offer, agent_id))
+                asks.append((offer['price'], offer['quantity'], agent_id))
             else:
                 raise RuntimeError(f"Received offer from unkown agent {agent_id}")
         
@@ -96,7 +97,7 @@ class MarketEngine:
 
         for agent_id in deals:
             self.done.add(agent_id)
-        print("time:",self.time,"max_steps:",self.max_steps)
+        print("matching time:",self.time)
         if self.time >= self.max_steps \
            or self.buyers.issubset(self.done) \
            or self.sellers.issubset(self.done):
@@ -136,21 +137,14 @@ class MarketEngine:
             agents that were matched will be in this dict. Note: the same deal
             price will appear twice under the buyer and seller id.
         """
-        df=pd.read_csv('/home/bidding-strategy/data/data.csv')
-#         hr_df=df.loc[df['Time'] == '08:00']
-        hr_df=df.loc[randint(0, 23)]
-        print(hr_df['Time'])
-        buyer_q=[float(hr_df[name]) for (price, name) in bids]
-        seller_q=[float(hr_df[name]) for (price, name) in asks]
-        print(bids,asks)
         buyers=[{
-            'id': bids[i][1],
-            'quantity':buyer_q[i],
+            'id': bids[i][2],
+            'quantity':bids[i][1],
             'bidPrice':bids[i][0],
             'timestamp':datetime.datetime.now().isoformat()
         } for i in range(len(bids))]
-        sellers=[{'id':asks[j][1],
-                  'quantity':seller_q[j],
+        sellers=[{'id':asks[j][2],
+                  'quantity':asks[j][1],
                   'bidPrice':asks[j][0],
                   'timestamp':datetime.datetime.now().isoformat()
         } for j in range(len(asks))]
@@ -162,16 +156,14 @@ class MarketEngine:
         r = requests.post(url = url, json = data) 
         # extracting response text
         result = json.loads(r.text)
-        
 #         bids.sort(reverse=True)
 #         asks.sort(reverse=False)
         deals = dict()
         n = min(len(bids), len(asks))
+        for agent in buyers:
+            deals[agent['id']] = [buyer['avgBoughtPrice'] for buyer in result['buyers'] if buyer['id'] == agent['id']][0]
         
-        for (bid, buyer_id), (ask, seller_id) in zip(bids[0:n], asks[0:n]):
-            deals[buyer_id] = [buyer['avgBoughtPrice'] for buyer in result['buyers'] if buyer['id'] == buyer_id][0]
-            deals[seller_id] = [seller['avgSoldPrice'] for seller in result['sellers'] if seller['id'] == seller_id][0]
-#             else:
-#                 break
+        for agent in sellers:
+            deals[agent['id']] = [seller['avgSoldPrice'] for seller in result['sellers'] if seller['id'] == agent['id']][0]
         return deals
 
