@@ -6,10 +6,12 @@ class Buyer:
     transaction =[]
     timestamp=None
     totalBoughtPrice = 0
+    avgBoughtPrice = 0
     bsi=0;mti=0
     utilityIndex=0
     # default constructor 
-    def __init__(self,quantityWant,bidPrice,timestamp): 
+    def __init__(self,id,quantityWant,bidPrice,timestamp): 
+        self.id=id
         self.quantityWant = quantityWant
         self.quantityLeft = quantityWant
         self.timestamp=timestamp
@@ -17,24 +19,30 @@ class Buyer:
         self.isGrid=False
         self.bidPrice = bidPrice
         self.totalBoughtPrice = 0
+        self.avgBoughtPrice = 0
         self.mti=0
         self.utilityIndex=0
         self.transaction=[]
   
     # a method for printing data members 
     def print_buyer(self): 
-        print("quantity:",self.quantityWant,
+        print(
+        "id:",self.id,
+        "\nquantity:",self.quantityWant,
         '\nbidPrice:',self.bidPrice,
         "\nbuyer q left:",self.quantityLeft,
         "\nbuyer bought transaction:",self.transaction,
         "\nbuyer totalBoughtPrice price:",self.totalBoughtPrice,
+        "\nbuyer avgBoughtPrice price:",self.avgBoughtPrice,
          "\nbsi:",self.bsi,
          "\nmti:",self.mti,
         "\nisGrid:",self.isGrid
         ) 
-        # print("====")
+        
+
     def toDict(self):
       return {"transaction": self.transaction, "totalBoughtPrice": self.totalBoughtPrice}
+
     def toGrid(self):
         self.isGrid=True
         self.bsi=1
