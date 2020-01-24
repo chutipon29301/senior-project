@@ -8,9 +8,9 @@ warnings.filterwarnings('ignore')
 import sys, os
 sys.path.append('/workspace/bidding-strategy/src')
 
-from biddingStrategy.environments import MultiAgentTrainingEnv
-from biddingStrategy.info_settings import OfferInformationSetting, TimeInformationWrapper
-from biddingStrategy.agents import GymRLAgent, TimeLinearAgent
+from biddingModule.environments import MultiAgentTrainingEnv
+from biddingModule.info_settings import OfferInformationSetting, TimeInformationWrapper
+from biddingModule.agents import GymRLAgent, TimeLinearAgent
 
 from ray.rllib.env.multi_agent_env import MultiAgentEnv
 
