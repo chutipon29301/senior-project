@@ -1,6 +1,7 @@
 import numpy as np
 from gym.spaces import Discrete, Box, Tuple
-
+from biddingModule.mode_dto import Mode
+from biddingModule.loadPVservice import StaticDataService
 class InformationSetting:
     """
     Abstract information setting class.
@@ -11,7 +12,16 @@ class InformationSetting:
         The specification of the observation space under this setting.
     """
 
-    def __init__(self):
+    def __init__(self, spliting_factor=0.8, mode= Mode.ALL):
+        self.mode = mode
+        loadService=StaticDataService()
+        df= loadService.df
+        if(mode!=Mode.ALL and spliting_factor<1 and spliting_factor>0 ):
+            train_df,test_df=loadService.splitTrainTest(spliting_factor)
+            if(mode==Mode.TRAIN):df=train_df
+            if(mode==Mode.TEST):df=test_df
+        self.df=df
+        self.num_round=len(df.index)
         pass
 
     def get_states(self, agent_ids, market):
@@ -36,6 +46,11 @@ class InformationSetting:
 
     def get_state(self, agent_id, market):
         return self.get_states([agent_id], market)[agent_id]
+    
+    def getAgentQuantity(self,round,id):
+        hr_df=self.df.loc[round]
+        quantity=hr_df[str(id)]
+        return int(quantity)
 
 
 class BlackBoxSetting(InformationSetting):
@@ -87,7 +102,8 @@ class OfferInformationSetting(InformationSetting):
         contains the bids and second row the asks. No offers will be
         represented by 0.
     """
-    def __init__(self, n_offers=5):
+    def __init__(self, n_offers=5, spliting_factor=0.8, mode= Mode.ALL):
+        super().__init__(spliting_factor, mode)
         self.n_offers = n_offers
         self.observation_space = Box(low=0, high=np.infty, shape=[2, n_offers])
 
@@ -98,11 +114,10 @@ class OfferInformationSetting(InformationSetting):
             return {agent_id: offers for agent_id in agent_ids}
 
         bids, asks = market.offer_history[-1]
-        for i, (bid, agent_id) in enumerate(bids[0:n]): offers[0][i] = bid
-        for i, (ask, agent_id) in enumerate(asks[0:n]): offers[1][i] = ask
+        for i, (bid,quantity, agent_id) in enumerate(bids[0:n]): offers[0][i] = bid
+        for i, (ask,quantity, agent_id) in enumerate(asks[0:n]): offers[1][i] = ask
         # The information each agent gets is the same
         return {agent_id: offers for agent_id in agent_ids}
-
 
 class DealInformationSetting(InformationSetting):
     """
