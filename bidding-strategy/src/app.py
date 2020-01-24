@@ -2,6 +2,9 @@ from flask import Flask, request,jsonify,json
 from flask_json import FlaskJSON, JsonError, json_response, as_json
 import urllib.parse
 import datetime
+
+import bidding
+
 app = Flask(__name__)
 
 @app.route('/')
