@@ -21,7 +21,9 @@ fixed_agents = [
 ]
 
 rl_agent = GymRLAgent('buyer', 5, discretization=20,name='CHAM5')
-setting = OfferInformationSetting(5)
+
+# setting = OfferInformationSetting(5,mode=Mode.TRAIN)
+setting = OfferInformationSetting(5,0.6,mode=Mode.TEST) #set data train/test/all
 
 model = DQN.load("deepq_trading")
 rl_agent.model = model
