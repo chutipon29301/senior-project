@@ -47,6 +47,10 @@ def dis_kda(k,buyers,sellers):
             i+=1
     print("adding grid dis-kda")
     buyersComplete,sellersComplete=addingGrid(buyers_sorted,sellers_sorted)
+    for buyer in buyersComplete:
+        if(len(buyer.transaction)>0):buyer.avgBoughtPrice=sum(tx.price for tx in buyer.transaction)/float(len(buyer.transaction))
+    for seller in sellersComplete:
+        if(len(seller.transaction)>0):seller.avgSoldPrice=sum(tx.price for tx in seller.transaction)/float(len(seller.transaction))
     buyersResult,sellersResult=updateEvalutaionIndex(buyersComplete,sellersComplete)
     return buyersResult,sellersResult
 
@@ -89,6 +93,10 @@ def trading_iterate(price,buyers,sellers):
             # buyer.print_buyer()
             listing.append([seller,buyer])
     buyersComplete,sellersComplete=addingGrid(buyers,sellers)
+    for buyer in buyersComplete:
+        if(len(buyer.transaction)>0):buyer.avgBoughtPrice=sum(tx.price for tx in buyer.transaction)/float(len(buyer.transaction))
+    for seller in sellersComplete:
+        if(len(seller.transaction)>0):seller.avgSoldPrice=sum(tx.price for tx in seller.transaction)/float(len(seller.transaction))
     buyersResult,sellersResult=updateEvalutaionIndex(buyersComplete,sellersComplete)
     return buyersResult,sellersResult
 
@@ -98,7 +106,7 @@ def addingGrid(buyers,sellers):
     print("in")
     print(totalQuantityWantLeft,totalQuantityAvailableLeft)
     if(totalQuantityWantLeft>totalQuantityAvailableLeft):
-        grid=Seller(totalQuantityWantLeft-totalQuantityAvailableLeft,5, datetime.datetime.now().isoformat()).toGrid()
+        grid=Seller("SellerGrid",totalQuantityWantLeft-totalQuantityAvailableLeft,5, datetime.datetime.now().isoformat()).toGrid()
         for buyer in buyers:
             if(buyer.quantityLeft>0):
                 buyer.totalBoughtPrice+=buyer.quantityLeft*grid.reservePrice
@@ -108,7 +116,7 @@ def addingGrid(buyers,sellers):
         sellers.append(grid)
         [seller.print_seller() for seller in sellers]
     if(totalQuantityAvailableLeft>totalQuantityWantLeft):
-        grid=Buyer(totalQuantityAvailableLeft-totalQuantityWantLeft,1.68,datetime.datetime.now().isoformat()).toGrid()
+        grid=Buyer("BuyerGrid",totalQuantityAvailableLeft-totalQuantityWantLeft,1.68,datetime.datetime.now().isoformat()).toGrid()
         grid.totalSoldPrice=1.68*totalQuantityAvailableLeft-totalQuantityWantLeft
         for seller in sellers:
             if(seller.quantityLeft>0):
