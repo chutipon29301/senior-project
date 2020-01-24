@@ -5,6 +5,7 @@ from biddingModule.environments import SingleAgentTrainingEnv
 from biddingModule.agents import UniformRandomAgent, GymRLAgent
 from biddingModule.info_settings import OfferInformationSetting
 from biddingModule.engine import MarketEngine
+from biddingModule.mode_dto import Mode
 
 from stable_baselines import A2C, DQN
 from stable_baselines.common.policies import *
@@ -24,12 +25,16 @@ fixed_agents = [
 ]
 
 rl_agent = GymRLAgent('buyer', 5, discretization=20,name='CHAM5')
-setting = OfferInformationSetting(5)
+setting = OfferInformationSetting(5,mode=Mode.TRAIN)
+# setting = OfferInformationSetting(5,0.6,mode=Mode.TEST) #set data train/test/all
 
 def get_env(rl_agent, fixed_agents, setting):
     return SingleAgentTrainingEnv(rl_agent, fixed_agents, setting)
+env=get_env(rl_agent, fixed_agents, setting)
+dummy_env = DummyVecEnv([lambda: env]) # wrap it for baselines
 
-env = DummyVecEnv([lambda: get_env(rl_agent, fixed_agents, setting)]) # wrap it for baselines
-model = DQN("MlpPolicy", env, verbose=1, learning_rate=0.05)
-model.learn(total_timesteps=10000)
+model = DQN("MlpPolicy", dummy_env, verbose=1, learning_rate=0.05)
+# model.learn(total_timesteps=10000)
+model.learn(total_timesteps=setting.num_round)
 # model.save("deepq_trading")
+# ===========================================================
