@@ -8,10 +8,10 @@ from stable_baselines.common.vec_env import DummyVecEnv
 import sys, os
 sys.path.append('/workspace/bidding-strategy/src')
 
-from biddingStrategy.environments import SingleAgentTrainingEnv
-from biddingStrategy.agents import UniformRandomAgent, GymRLAgent
-from biddingStrategy.info_settings import OfferInformationSetting
-from biddingStrategy.engine import MarketEngine
+from biddingModule.environments import SingleAgentTrainingEnv
+from biddingModule.agents import UniformRandomAgent, GymRLAgent
+from biddingModule.info_settings import OfferInformationSetting
+from biddingModule.engine import MarketEngine
 
 
 fixed_agents = [
