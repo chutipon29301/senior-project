@@ -17,6 +17,7 @@ class MarketAgent:
     def __init__(self, role, reservation_price, name=None):
         if not role in ['buyer', 'seller']:
             raise ValueError("Role must be either buyer or seller")
+            print(reservation_price)
         if reservation_price <= 0:
             raise ValueError("Reservation price must be positive")
 
@@ -90,8 +91,10 @@ class FactorAgent(MarketAgent):
         r = reservation_price
         self._s = (-1 if role == 'buyer' else 1)
         self._c = (1 + self._s * max_factor)
-        self._a = min(r, self._c*r) # minimum agent can offer
-        self._b = max(r, self._c*r) # maximum agent can offer
+        self._a = 1.68 # minimum agent can offer
+        self._b = 5 # maximum agent can offer
+#         self._a = min(r, self._c*r) # minimum agent can offer
+#         self._b = max(r, self._c*r) # maximum agent can offer
 
 
 class UniformRandomAgent(FactorAgent):
@@ -111,6 +114,7 @@ class UniformRandomAgent(FactorAgent):
     """
 
     def get_offer(self, observation):
+        
         return np.random.uniform(self._a, self._b)
 
 
