@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { SellTransaction } from './SellTransaction.entity';
 import { BuyTransaction } from './BuyTransaction.entity';
-import { IsOptional } from 'class-validator';
 
 @Entity()
 export default class Round {
