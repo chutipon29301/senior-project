@@ -4,3 +4,4 @@ bin
 *-old
 data/
 env
+script/__pycache__
