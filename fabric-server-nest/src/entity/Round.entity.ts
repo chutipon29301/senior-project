@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { SellTransaction } from './SellTransaction.entity';
 import { BuyTransaction } from './BuyTransaction.entity';
+import BuyerBid from './BuyerBid.entity';
+import SellerBid from './SellerBid.entity';
 
 @Entity()
 export default class Round {
@@ -33,4 +35,10 @@ export default class Round {
 
     @OneToMany(_ => BuyTransaction, buyerTransaction => buyerTransaction.round)
     buyTransactions: BuyTransaction[];
+
+    @OneToMany(_ => BuyerBid, buyerBid => buyerBid.round)
+    buyerBids: BuyerBid[];
+
+    @OneToMany(_ => SellerBid, sellerBid => sellerBid.round)
+    sellerBids: SellerBid[];
 }
