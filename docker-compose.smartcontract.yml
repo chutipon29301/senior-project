@@ -10,6 +10,5 @@ services:
     environment: 
       FLASK_APP: src/app.py
       FLASK_DEBUG: 1
-      GOPATH: 
     ports: 
       - 5000:5000
