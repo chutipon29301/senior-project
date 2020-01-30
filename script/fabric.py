@@ -23,10 +23,10 @@ class Fabric(object):
 
         for org in orgs:
             print('Joining channel - organization: %s' % org['name'])
-            self.joinChannel(org['token']
+            self.joinChannel(org['token'])
         for org in orgs:
             print('Installing chaincode - organization: %s' % org['name'])
-            self.installChaincode(org['token']
+            self.installChaincode(org['token'])
 
         print('Instantiating chaincode...')
         self.instantiateChaincode(bld['token'])
@@ -73,3 +73,4 @@ class Fabric(object):
             }
         )
         return res
+
