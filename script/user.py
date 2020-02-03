@@ -48,6 +48,21 @@ class User():
 
         return json_response['id']
 
+    def listToken(self):
+        print(pd.read_csv(self.TOKEN_PATH))
+
+    def refreshToken(self):
+        usersInfo = pd.read_csv(self.TOKEN_PATH)
+        print(usersInfo['token'])
+        for index, row in usersInfo.iterrows():
+            print(row['token'])
+            token = self.userToken(row['id'])
+            print(token)
+            row.at['token'] = token
+        print(usersInfo['token'])
+        usersInfo.to_csv(self.TOKEN_PATH, index = False)
+
+
     def userToken(self, id):
         res = requests.post(
             urllib.parse.urljoin(os.getenv('FABRIC_URL'), 'auth/token'),
