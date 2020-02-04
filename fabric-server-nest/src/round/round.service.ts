@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, MoreThan, LessThanOrEqual } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Round from '../entity/Round.entity';
@@ -13,13 +13,31 @@ export class RoundService {
         private readonly fabricService: FabricService,
     ) { }
 
-    public async createRound(startDate: Date, endDate: Date, {organization, id}: User): Promise<Round> {
+    public async createRound(startDate: Date, endDate: Date, { organization, id }: User): Promise<Round> {
         const round = new Round();
         round.startDate = startDate;
         round.endDate = endDate;
         await this.roundRepository.save(round);
         await this.fabricService.createRound(round.id, organization, id);
         return round;
+    }
+
+    public async findOneOrCreate(date: Date, user: User): Promise<Round> {
+        const round = await this.roundRepository.findOne({
+            where: {
+                startDate: LessThanOrEqual(date),
+                endDate: MoreThan(date),
+            },
+        });
+        if (round) {
+            return round;
+        } else {
+            return this.createRound(
+                new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours()),
+                new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() + 1),
+                user,
+            );
+        }
     }
 
     public async listRounds(): Promise<Round[]> {
@@ -29,9 +47,5 @@ export class RoundService {
     public async getChaincodeInRound(roundId: string, { organization, id }: User) {
         return this.fabricService.getChaincode(roundId, organization, id);
     }
-
-    // public async getRound(roundId: string) {
-    //     this.fabricService.
-    // }
 
 }
