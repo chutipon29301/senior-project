@@ -9,5 +9,6 @@ import { FabricModule } from '../fabric/fabric.module';
   imports: [TypeOrmModule.forFeature([Round]), FabricModule],
   controllers: [RoundController],
   providers: [RoundService],
+  exports: [RoundService],
 })
 export class RoundModule { }
