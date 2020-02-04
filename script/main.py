@@ -6,8 +6,7 @@ from pathlib import Path
 from user import User
 from fabric import Fabric
 from service import Service
-
-
+from bid import Bid
 class Pipeline(object):
 
     absPath = os.path.abspath(os.curdir)
@@ -19,11 +18,13 @@ class Pipeline(object):
         os.environ['FABRIC_URL'] = 'http://localhost:3000/'
         os.environ['STORAGE_DIR'] = os.path.join(dirname, 'tmp')
         os.environ['USER_LIST'] = os.path.join(dirname, 'data/user.csv')
+        os.environ['USER_STORAGE'] = os.path.join(os.getenv('STORAGE_DIR'), 'user.csv')
        
         # Import Grouped command
         self.user = User()
         self.fabric = Fabric()
         self.service = Service()
+        self.bid = Bid()
 
     def cleanFabric(self):
         self.service.stop('fabric', 'nest')
