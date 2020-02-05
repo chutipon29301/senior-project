@@ -86,6 +86,7 @@ class MarketEngine:
             elif agent_id in self.buyers:
                 bids.append((offer['price'], offer['quantity'], agent_id))
             elif agent_id in self.sellers:
+                # print(offer['price'], offer['quantity'], agent_id)
                 asks.append((offer['price'], offer['quantity'], agent_id))
             else:
                 raise RuntimeError(f"Received offer from unkown agent {agent_id}")
@@ -97,7 +98,7 @@ class MarketEngine:
 
         for agent_id in deals:
             self.done.add(agent_id)
-        print("matching time:",self.time)
+        # print("matching time:",self.time)
         if self.time >= self.max_steps \
            or self.buyers.issubset(self.done) \
            or self.sellers.issubset(self.done):
@@ -156,14 +157,12 @@ class MarketEngine:
         r = requests.post(url = url, json = data) 
         # extracting response text
         result = json.loads(r.text)
-#         bids.sort(reverse=True)
-#         asks.sort(reverse=False)
         deals = dict()
         n = min(len(bids), len(asks))
         for agent in buyers:
             deals[agent['id']] = [buyer['avgBoughtPrice'] for buyer in result['buyers'] if buyer['id'] == agent['id']][0]
-        
         for agent in sellers:
             deals[agent['id']] = [seller['avgSoldPrice'] for seller in result['sellers'] if seller['id'] == agent['id']][0]
+        # print(data,"\n===========\n",deals)
         return deals
 

@@ -85,9 +85,12 @@ class MultiAgentTrainingEnv(gym.Env):
         for agent_id in agent_ids:
             if agent_id in deals:
                 agent = self.all_agents[agent_id]
-                sign = (-1 if agent.role == 'buyer' else +1)
+                sign = (-1 if agent.role == 'buyer' else 1)
                 res_price = agent.reservation_price
                 result[agent_id] = (deals[agent_id] - res_price)*sign
+                if(result[agent_id]<0):result[agent_id]=0 #case: no energy to sell(deal=0 while reserve price=1.68) or no demand
+                # print("===============")
+                # print("deal:",deals[agent_id],"\nreserve_price:",res_price)
             else:
                 result[agent_id] = 0
         return result
@@ -127,8 +130,8 @@ class MultiAgentTrainingEnv(gym.Env):
             Contains additionally a string key ``__all__`` to indicate
             whether every agent is done.
         """
-        print("multi agent actions:",actions)
-        print(self.iterate_round)
+        # print("multi agent actions:",actions)
+        # print(self.iterate_round)
         # Get dict of fixed agents that aren't yet done
         other_agents = {
             agent.name: agent for agent in self.fixed_agents.values()
@@ -148,7 +151,6 @@ class MultiAgentTrainingEnv(gym.Env):
                 'price':self.rl_agents[rl_agent_id].action_to_price(
                     actions[rl_agent_id]
                 ),
-                
                 'quantity': self.setting.getAgentQuantity(self.iterate_round,rl_agent_id)
             }
 
