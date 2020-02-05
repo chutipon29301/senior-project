@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { BuyTransaction } from './BuyTransaction.entity';
 import { SellTransaction } from './SellTransaction.entity';
+import BuyerBid from './BuyerBid.entity';
+import SellerBid from './SellerBid.entity';
 
 export enum Organization {
     Utility = 'Utility',
@@ -30,4 +32,10 @@ export default class User {
 
     @OneToMany(_ => SellTransaction, sellTransaction => sellTransaction.user)
     sellTransactions: SellTransaction[];
+
+    @OneToMany(_ => BuyerBid, buyerBid => buyerBid.user)
+    buyerBids: BuyerBid[];
+
+    @OneToMany(_ => SellerBid, sellerBid => sellerBid.user)
+    sellerBids: SellerBid[];
 }

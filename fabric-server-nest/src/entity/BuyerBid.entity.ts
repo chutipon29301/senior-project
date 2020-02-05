@@ -1,5 +1,6 @@
-import { PrimaryGeneratedColumn, Entity, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { PrimaryGeneratedColumn, Entity, Column, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import Round from './Round.entity';
+import User from './User.entity';
 
 @Entity()
 export default class BuyerBid {
@@ -12,6 +13,9 @@ export default class BuyerBid {
 
     @CreateDateColumn()
     timestamp: Date;
+
+    @ManyToOne(_ => User, user => user.buyerBids)
+    user: User;
 
     @ManyToOne(_ => Round, round => round.buyerBids)
     round: Round;

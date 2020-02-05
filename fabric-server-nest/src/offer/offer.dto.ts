@@ -1,9 +1,10 @@
-import { IsPositive, IsString } from 'class-validator';
+import { IsPositive, IsString, IsISO8601 } from 'class-validator';
 
 export class CreateOfferDto {
     @IsPositive()
     price: number;
 
-    @IsString()
-    roundId: string;
+    @IsISO8601()
+    date: string;
+
 }
