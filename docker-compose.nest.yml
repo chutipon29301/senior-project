@@ -16,6 +16,7 @@ services:
       MYSQL_PASSWORD: password
       MYSQL_PORT: 3306
       SMARTCONTRACT_URL: smartcontract.example.com:5000
+      SMARTMETER_URL: smartmeter.example.com:5000
       BUILDING_ADMIN_USERNAME: admin
       BUILDING_ADMIN_PASSWORD: adminpw
       PV_ADMIN_USERNAME: admin

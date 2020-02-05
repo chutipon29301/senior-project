@@ -34,6 +34,10 @@ export class ConfigService {
         return this.getEnv('SMARTCONTRACT_URL');
     }
 
+    get smartMeterUrl(): string {
+        return this.getEnv('SMARTMETER_URL');
+    }
+
     get jwtSecret(): string {
         return 'Hello';
     }
