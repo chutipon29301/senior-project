@@ -1,34 +1,50 @@
 import pandas as pd
 import numpy as np
-
+import time
 from biddingModule.agents import UniformRandomAgent, GymRLAgent
 from biddingModule.info_settings import OfferInformationSetting
 from biddingModule.engine import MarketEngine
-from biddingModule.mode_dto import Mode
+from biddingModule.modeDTO import Mode
 
+from tqdm import tqdm
 
-from stable_baselines import A2C, DQN
+from stable_baselines import A2C, DQN, PPO2
 from stable_baselines.common.policies import *
 
 fixed_agents = [
-    UniformRandomAgent('seller', 3, name='CHAM1-PV'),
-    UniformRandomAgent('seller', 3, name='CHAM2-PV'),
-    UniformRandomAgent('seller', 3, name='CHAM3-PV'),
-    UniformRandomAgent('seller', 3, name='CHAM4-PV'),
-    UniformRandomAgent('seller', 3, name='CHAM5-PV'),
+    UniformRandomAgent('seller', 1.68, name='CHAM1-PV'),
+    UniformRandomAgent('seller', 1.68, name='CHAM2-PV'),
+    UniformRandomAgent('seller', 1.68, name='CHAM3-PV'),
+    UniformRandomAgent('seller', 1.68, name='CHAM4-PV'),
+    UniformRandomAgent('seller', 1.68, name='CHAM5-PV'),
     UniformRandomAgent('buyer', 5, name='CHAM1'),
     UniformRandomAgent('buyer', 5, name='CHAM2'),
     UniformRandomAgent('buyer', 5, name='CHAM3'),
-    UniformRandomAgent('buyer', 5, name='CHAM4'),
+    # UniformRandomAgent('buyer', 5, name='CHAM4'),
+    UniformRandomAgent('buyer', 5, name='CHAM5')
 ]
 
-rl_agent = GymRLAgent('buyer', 5, discretization=20,name='CHAM5')
+rl_agents=[
+    # GymRLAgent('seller', 1.68, discretization=20,name='CHAM5-PV'),
+    # GymRLAgent('seller', 1.68, discretization=20,name='CHAM4-PV'),
+    # GymRLAgent('seller', 1.68, discretization=20,name='CHAM3-PV'),
+    # GymRLAgent('seller', 1.68, discretization=20,name='CHAM2-PV'),
+    # GymRLAgent('seller', 1.68, discretization=20,name='CHAM1-PV'),
+    # GymRLAgent('buyer', 5, discretization=20,name='CHAM1'),
+    # GymRLAgent('buyer', 5, discretization=20,name='CHAM2'),
+    # GymRLAgent('buyer', 5, discretization=20,name='CHAM3'),
+    GymRLAgent('buyer', 5, discretization=20,name='CHAM4'),
+    # GymRLAgent('buyer', 5, discretization=20,name='CHAM5'),
+]
 
-# setting = OfferInformationSetting(5,mode=Mode.TRAIN)
-setting = OfferInformationSetting(5,0.6,mode=Mode.TEST) #set data train/test/all
+setting = OfferInformationSetting(5,mode=Mode.TEST) #set data train/test/all
 
-model = DQN.load("deepq_trading")
-rl_agent.model = model
+model = DQN.load("./model/buyer3_DQN_LnMlp_full_disKDA")
+# model = DQN.load("./model/buyer3_DQN_Mlp_full_disKDA")
+# model = DQN.load("./model/buyer_DQN_Mlp_full_uniKDA")
+# model = DQN.load("./model/buyer_DQN_LnMlp_full_uniKDA")
+for rl_agent in rl_agents:
+    rl_agent.model = model
 def get_reward(agent, deals):
     if not agent.name in deals:
         return [0,0,0]
@@ -78,7 +94,8 @@ def play_games(agents, setting, n_games=100, max_steps=30):
     
     rewards = pd.DataFrame(0, index=np.arange(n_games), columns=ids)
     # rewards = pd.DataFrame(0, index=np.arange(n_games), columns=ids.union(ids_info))
-    for game_idx in range(n_games):
+    for game_idx,i in zip(range(n_games),tqdm(range(n_games))):
+        
         while market.done != ids:
             observations = setting.get_states(ids, market)
             unmatched_agents = [
@@ -96,4 +113,6 @@ def play_games(agents, setting, n_games=100, max_steps=30):
                 # rewards[agent.name+"_resev"][game_idx] = get_reward(agent, deals)[2]
         market.reset()
     return rewards.reindex(sorted(rewards.columns), axis=1)
-print(play_games(fixed_agents + [rl_agent], setting, 10).describe())
+start=time.time()
+print(play_games(fixed_agents + rl_agents, setting, setting.num_round).describe())
+print((time.time()-start)/60, " mins")
