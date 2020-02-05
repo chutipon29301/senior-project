@@ -11,10 +11,11 @@ export class UserService {
         private readonly fabricService: FabricService,
     ) { }
 
-    public async createUser(name: string, organization: Organization): Promise<User> {
+    public async createUser(name: string, organization: Organization, smartMeterId: string): Promise<User> {
         const user = new User();
         user.name = name;
         user.organization = organization;
+        user.smartMeterId = smartMeterId;
         await this.userRepository.save(user);
         await this.fabricService.createUser(user.id, user.organization);
         return user;

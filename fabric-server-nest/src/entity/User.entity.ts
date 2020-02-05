@@ -22,6 +22,9 @@ export default class User {
     })
     organization: Organization;
 
+    @Column()
+    smartMeterId: string;
+
     @OneToMany(_ => BuyTransaction, buyTransaction => buyTransaction.user)
     buyTransactions: BuyTransaction[];
 

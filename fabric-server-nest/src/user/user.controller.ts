@@ -8,8 +8,8 @@ export class UserController {
     constructor(readonly service: UserService) { }
 
     @Post()
-    public async createUser(@Body() { name, organizationName }: CreateUserDto): Promise<User> {
-        return this.service.createUser(name, organizationName);
+    public async createUser(@Body() { name, organizationName, smartMeterId }: CreateUserDto): Promise<User> {
+        return this.service.createUser(name, organizationName, smartMeterId);
     }
 
 }
