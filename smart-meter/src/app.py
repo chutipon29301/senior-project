@@ -18,14 +18,11 @@ def hello_world():
 def getQuantity():
     data = json.loads(request.get_data())
     time = dateutil.parser.parse(data['timestamp'])
-
-    df = self.df
     
     next_hr=time + timedelta(hours=1)
     filter_date_df=df[(df['Time'].dt.day==next_hr.day)&(df['Time'].dt.month==next_hr.month)]
 
-    filter_date_df.set_index('Time',inplace=True)
+    filter_date_df.set_index('Time', inplace=True)
     quantity_row = (filter_date_df.between_time(time.time(),next_hr.time()))
-    json_obj=quantity_row.to_dict(orient='records')
-
+    json_obj=quantity_row.to_dict(orient='records')[0]
     return json_obj
