@@ -5,7 +5,7 @@ from biddingModule.info_settings import OfferInformationSetting
 from stable_baselines import A2C, DQN
 from stable_baselines.common.policies import *
 from stable_baselines.common.vec_env import DummyVecEnv
-from mode_dto import Mode
+from modeDTO import Mode
 fixed_agents = [
     UniformRandomAgent('seller', 3, name='CHAM1-PV'),
     UniformRandomAgent('seller', 3, name='CHAM2-PV'),
