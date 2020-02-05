@@ -7,8 +7,7 @@ import random
 class Fabric(object):
 
     def setup(self):
-        tokenPath = os.path.join(
-            os.getenv('STORAGE_DIR'), 'token.csv')
+        tokenPath = os.getenv('USER_STORAGE')
         if not os.path.exists(tokenPath):
             raise Exception('bld has not been created')
         df = pd.read_csv(tokenPath)
