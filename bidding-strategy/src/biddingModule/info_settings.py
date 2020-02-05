@@ -1,6 +1,6 @@
 import numpy as np
 from gym.spaces import Discrete, Box, Tuple
-from biddingModule.mode_dto import Mode
+from biddingModule.modeDTO import Mode
 from biddingModule.loadPVservice import StaticDataService
 class InformationSetting:
     """
