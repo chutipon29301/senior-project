@@ -33,6 +33,7 @@ Markdown==3.1.1
 MarkupSafe==1.1.1   
 matplotlib==3.1.2   
 mccabe==0.6.1   
+mpi4py==3.0.3
 more-itertools==8.0.0   
 numpy==1.17.4  
 opencv-python==4.1.2.30
@@ -66,6 +67,7 @@ tensorflow==1.14.0
 tensorflow-estimator==1.14.0  
 termcolor==1.1.0   
 typed-ast==1.4.0   
+tqdm==4.42.0
 wcwidth==0.1.7   
 Werkzeug==0.16.0  
 wheel==0.33.6  
