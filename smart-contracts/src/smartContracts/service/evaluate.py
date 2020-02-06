@@ -1,8 +1,7 @@
+
 def updateEvalutaionIndex(buyers,sellers):
     GRID_SOLD_PRICE=5
     GRID_BOUGHT_PRICE=1.68
-    K=len(buyers)
-    L=len(sellers)
     buyersNoGrid = [b for b in buyers if not b.isGrid]
     sellersNoGrid = [s for s in sellers if not s.isGrid]
     for buyer in buyersNoGrid:
@@ -17,12 +16,13 @@ def updateEvalutaionIndex(buyers,sellers):
             seller.ssi=round(seller.totalSoldPrice/(seller.quantityAvailable*seller.reservePrice),2)
         except ZeroDivisionError:
             seller.ssi = 0
-    totalBsi=sum([(buyer.bsi*buyer.quantityWant)/K for buyer in buyers])
-    totalSsi=sum([(seller.ssi*seller.quantityAvailable)/L for seller in sellers])
+    return buyers,sellers
+
+def getMTI(buyers,sellers):
+    totalBsi=sum([(buyer.bsi*buyer.quantityWant)/len(buyers) for buyer in buyers])
+    totalSsi=sum([(seller.ssi*seller.quantityAvailable)/len(sellers) for seller in sellers])
     try:
         mti=round(totalBsi/totalSsi,2)
     except ZeroDivisionError:
         mti = 0
-    for buyer in buyers: buyer.mti=mti
-    for seller in sellers: seller.mti=mti
-    return buyers,sellers
+    return mti
