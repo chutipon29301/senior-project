@@ -149,7 +149,7 @@ class MarketEngine:
                   'bidPrice':asks[j][0],
                   'timestamp':datetime.datetime.now().isoformat()
         } for j in range(len(asks))]
-        data = {"buyers":buyers,"sellers":sellers}
+        data = {"buyers":buyers,"sellers":sellers,"utilities":["utility"]}
         API_ENDPOINT = "http://smartcontract.example.com:5000"
         # url=API_ENDPOINT+'/uniKDA'
         url=API_ENDPOINT+'/disKDA'
@@ -158,7 +158,6 @@ class MarketEngine:
         # extracting response text
         result = json.loads(r.text)
         deals = dict()
-        n = min(len(bids), len(asks))
         for agent in buyers:
             deals[agent['id']] = [buyer['avgBoughtPrice'] for buyer in result['buyers'] if buyer['id'] == agent['id']][0]
         for agent in sellers:
