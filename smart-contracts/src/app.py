@@ -1,11 +1,12 @@
 from flask import Flask, request,jsonify,json
 from flask_json import FlaskJSON, JsonError, json_response, as_json
 import urllib.parse
-from smartContracts.smart_contracts import *
-from smartContracts.buyer import *
-from smartContracts.seller import *
-import datetime
+from SmartContracts.main import *
+from controller import *
+
 app = Flask(__name__)
+
+k=0.5
 
 @app.route('/')
 def hello_world():
@@ -20,65 +21,23 @@ def test():
 @app.route('/disKDA', methods=['POST'])
 def disKDA():
     data = json.loads(request.get_data())
-    raw_buyers = data['buyers']
-    raw_sellers = data['sellers']
-    buyers=[];sellers=[]
-    qWanted=0;qAvailable=0
-    print(raw_buyers[0]['bidPrice'])
-    for buyer in raw_buyers:
-        qWanted+=buyer['quantity']
-        buyers.append(Buyer(buyer['id'],buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
-    for seller in raw_sellers:
-        qAvailable+=seller['quantity']
-        sellers.append(Seller(seller['id'],seller['quantity'],seller['bidPrice'],seller['timestamp']))
-    buyers_result,sellers_result=discriminatory_kda(buyers,sellers)
-    print(buyers_result,sellers_result)
-    # buyers_result = [obj.to_dict() for obj in buyers_result]
-    # sellers_result = [obj.to_dict() for obj in sellers_result]
-    # data['buyers'],data['sellers'] = json.dumps({"results": buyers_result}),json.dumps({"results": sellers_result})
-    for buyer in buyers_result:
-        buyer.transaction=[ob.__dict__ for ob in buyer.transaction]
-    for seller in sellers_result:
-        seller.transaction=[ob.__dict__ for ob in seller.transaction]
-    return json.dumps({"buyers":[ob.__dict__ for ob in buyers_result],"sellers":[ob.__dict__ for ob in sellers_result]})
-
+    buyers,sellers,utilities = getUsers(data)
+    buyers_result,sellers_result = dis_kda(k,buyers,sellers,utilities)
+    return getResult(buyers_result,sellers_result)
+    
 @app.route('/uniKDA', methods=['POST'])
 def uniKDA():
     data = json.loads(request.get_data())
-    raw_buyers = data['buyers']
-    raw_sellers = data['sellers']
-    buyers=[];sellers=[]
-    for buyer in raw_buyers:
-        buyers.append(Buyer(buyer['id'],buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
-    for seller in raw_sellers:
-        sellers.append(Seller(seller['id'],seller['quantity'],seller['bidPrice'],seller['timestamp']))
-    buyers_result,sellers_result=uniform_kda(buyers,sellers)
-    print(buyers_result,sellers_result)
-    for buyer in buyers_result:
-        buyer.transaction=[ob.__dict__ for ob in buyer.transaction]
-    for seller in sellers_result:
-        seller.transaction=[ob.__dict__ for ob in seller.transaction]
-    return json.dumps({"buyers":[ob.__dict__ for ob in buyers_result],"sellers":[ob.__dict__ for ob in sellers_result]})
-
+    buyers,sellers,utilities = getUsers(data)
+    buyers_result,sellers_result = uni_kda(k,buyers,sellers,utilities)
+    return getResult(buyers_result,sellers_result)
 
 @app.route('/weightedAvg', methods=['POST'])
 def weightedAvg():
     data = json.loads(request.get_data())
-    raw_buyers = data['buyers']
-    raw_sellers = data['sellers']
-    buyers=[];sellers=[]
-    for buyer in raw_buyers:
-        buyers.append(Buyer(buyer['id'],buyer['quantity'],buyer['bidPrice'],buyer['timestamp']))
-    for seller in raw_sellers:
-        sellers.append(Seller(seller['id'],seller['quantity'],seller['bidPrice'],seller['timestamp']))
-    buyers_result,sellers_result=weighted_avg(buyers,sellers)
-    print(buyers_result,sellers_result)
-    for buyer in buyers_result:
-        buyer.transaction=[ob.__dict__ for ob in buyer.transaction]
-    for seller in sellers_result:
-        seller.transaction=[ob.__dict__ for ob in seller.transaction]
-    return json.dumps({"buyers":[ob.__dict__ for ob in buyers_result],"sellers":[ob.__dict__ for ob in sellers_result]})
-
+    buyers,sellers,utilities = getUsers(data)
+    buyers_result,sellers_result = weighted_avg(buyers,sellers,utilities)
+    return getResult(buyers_result,sellers_result)
 
 if __name__ == '__main__':
     app.run()
