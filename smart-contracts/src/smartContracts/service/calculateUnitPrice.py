@@ -27,7 +27,6 @@ def getUniPrice(k,buyers,sellers):
     # fig.savefig('test.png')
 
     buyer_i,seller_j=poly_intersection(buyer_line,seller_line)
-    print(buyer_i,seller_j)
     return k*buyer_price[buyer_i]+(1-k)*seller_price[seller_j]
 
 
