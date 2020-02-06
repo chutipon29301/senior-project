@@ -19,8 +19,8 @@ fixed_agents = [
     UniformRandomAgent('seller', 1.68, name='CHAM5-PV'),
     UniformRandomAgent('buyer', 5, name='CHAM1'),
     UniformRandomAgent('buyer', 5, name='CHAM2'),
-    UniformRandomAgent('buyer', 5, name='CHAM3'),
-    # UniformRandomAgent('buyer', 5, name='CHAM4'),
+    # UniformRandomAgent('buyer', 5, name='CHAM3'),
+    UniformRandomAgent('buyer', 5, name='CHAM4'),
     UniformRandomAgent('buyer', 5, name='CHAM5')
 ]
 
@@ -32,15 +32,16 @@ rl_agents=[
     # GymRLAgent('seller', 1.68, discretization=20,name='CHAM1-PV'),
     # GymRLAgent('buyer', 5, discretization=20,name='CHAM1'),
     # GymRLAgent('buyer', 5, discretization=20,name='CHAM2'),
-    # GymRLAgent('buyer', 5, discretization=20,name='CHAM3'),
-    GymRLAgent('buyer', 5, discretization=20,name='CHAM4'),
+    GymRLAgent('buyer', 5, discretization=20,name='CHAM3'),
+    # GymRLAgent('buyer', 5, discretization=20,name='CHAM4'),
     # GymRLAgent('buyer', 5, discretization=20,name='CHAM5'),
 ]
 
 setting = OfferInformationSetting(5,mode=Mode.TEST) #set data train/test/all
 
 model = DQN.load("./model/buyer3_DQN_LnMlp_full_disKDA")
-# model = DQN.load("./model/buyer3_DQN_Mlp_full_disKDA")
+
+# model = DQN.load("./model/buyer2_DQN_Mlp_full_disKDA")
 # model = DQN.load("./model/buyer_DQN_Mlp_full_uniKDA")
 # model = DQN.load("./model/buyer_DQN_LnMlp_full_uniKDA")
 for rl_agent in rl_agents:
@@ -51,10 +52,10 @@ def get_reward(agent, deals):
     deal_price = deals[agent.name]
     if(deal_price==0): reward=0
     if agent.role == 'buyer':
-        if(deal_price!=0): reward = agent.reservation_price - deal_price
+        if(deal_price!=0): reward = (agent.reservation_price - deal_price)
         return [reward,deal_price,agent.reservation_price]
     else:
-        if(deal_price!=0):reward = deal_price - agent.reservation_price
+        if(deal_price!=0):reward = (deal_price - agent.reservation_price)
         return [reward,deal_price,agent.reservation_price]
 
 def play_games(agents, setting, n_games=100, max_steps=30):
@@ -92,8 +93,8 @@ def play_games(agents, setting, n_games=100, max_steps=30):
     # ids_info=set(buyer_ids_deal + seller_ids_deal+ buyer_ids_resev + seller_ids_resev)
     market = MarketEngine(buyer_ids, seller_ids, max_steps=max_steps)
     
-    rewards = pd.DataFrame(0, index=np.arange(n_games), columns=ids)
-    # rewards = pd.DataFrame(0, index=np.arange(n_games), columns=ids.union(ids_info))
+    rewards = pd.DataFrame(0, index=np.arange(n_games), columns=ids, dtype=float)
+    # rewards = pd.DataFrame(0, index=np.arange(n_games), columns=ids.union(ids_info), dtype=float)
     for game_idx,i in zip(range(n_games),tqdm(range(n_games))):
         
         while market.done != ids:
@@ -102,6 +103,7 @@ def play_games(agents, setting, n_games=100, max_steps=30):
                 agent for agent in agents
                 if agent.name not in market.done
             ]
+            
             offers = {
                 agent.name: {'price': agent.get_offer(observations[agent.name]), 'quantity': setting.getAgentQuantity(game_idx,agent.name)}
                 for agent in unmatched_agents
@@ -114,5 +116,8 @@ def play_games(agents, setting, n_games=100, max_steps=30):
         market.reset()
     return rewards.reindex(sorted(rewards.columns), axis=1)
 start=time.time()
-print(play_games(fixed_agents + rl_agents, setting, setting.num_round).describe())
+df=play_games(fixed_agents + rl_agents, setting, setting.num_round)
+# [['CHAM3','CHAM3_deal','CHAM3_resev']]
+# print(df.iloc[df['CHAM3'].idxmax()])
+print(df.describe())
 print((time.time()-start)/60, " mins")
