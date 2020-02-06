@@ -8,10 +8,8 @@ def getUsers(data):
     raw_buyers = data['buyers']
     raw_sellers = data['sellers']
     utilities = data['utilities']
-    
     buyers=[(Buyer(**buyer)) for buyer in raw_buyers]
     sellers=[(Seller(**seller)) for seller in raw_sellers]
-    
     return buyers,sellers,utilities
 
 def getResult(buyers_result,sellers_result):
