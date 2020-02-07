@@ -6,6 +6,6 @@ services:
     build: ./smart-meter
     volumes: 
       - ./smart-meter:/home/smartmeter
-    command: sh -c 'cd src && uvicorn main:app --reload --host 0.0.0.0'
+    command: uvicorn main:app --reload --host 0.0.0.0
     ports: 
       - 3001:8000
