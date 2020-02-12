@@ -7,6 +7,7 @@ from user import User
 from fabric import Fabric
 from service import Service
 from bid import Bid
+from etl import ETL
 class Pipeline(object):
 
     absPath = os.path.abspath(os.curdir)
@@ -25,6 +26,7 @@ class Pipeline(object):
         self.fabric = Fabric()
         self.service = Service()
         self.bid = Bid()
+        self.etl = ETL()
 
     def cleanFabric(self):
         self.service.stop('fabric', 'nest')
