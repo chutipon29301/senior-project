@@ -40,28 +40,22 @@ class Bid():
         df = pd.read_csv(self.USER_STORAGE)
         tokens = df['token'].to_list()
         for token in tokens:
-            result=createOffer(token,timestamp)
-            print(result)
+            self.createOffer(token,timestamp)
         
 
     def createOffer(self,token,timestamp):
-        # token="299b50c0-6f7d-4f91-9947-cf84030a4780,eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI5OWI1MGMwLTZmN2QtNGY5MS05OTQ3LWNmODQwMzBhNDc4MCIsIm5hbWUiOiJDaGFtNSIsIm9yZ2FuaXphdGlvbiI6IlBWIiwiaWF0IjoxNTgwNDA1MzAxLCJleHAiOjE1ODEwMTAxMDF9.f9FZEFQqPuEwICjm3rXjBVjC4Q1gAryES-BHGnmknOg"
-        # fake = faker.Faker()
-        # rand_date = fake.date_time()  # datetime(2006, 4, 30, 3, 1, 38)
-        date_iso = timestamp.isoformat()  # '2006-04-30T03:01:38'
+        body = {
+            'price': random.uniform(0, 5),
+            'date': timestamp.isoformat()
+        }
         res = requests.post(
-            urllib.parse.urljoin(os.getenv('FABRIC_URL'),
-                                 '/offer/createOffer'),
-            headers={
+            urllib.parse.urljoin(os.getenv('FABRIC_URL'), '/offer'),
+            headers = {
                 'authorization': "Bearer "+ token
             },
-            data={
-                'price': random.uniform(0,5),
-                'date': date_iso
-            }
+            json = body
         )
-        return res.json()
-        
+        print(res.status_code)
         
 """
 name,organization,id,token
