@@ -5,22 +5,35 @@ from .service.calculateUnitPrice import *
 from .service.evaluate import *
 import datetime 
 import random
+from typing import List,Optional,Tuple
 
-def dis_kda(k,buyers,sellers,utilities):
+def dis_kda(k: float, 
+            buyers: List[Buyer], 
+            sellers: List[Seller],
+            utilities: List[str])-> Tuple[List[Buyer],List[Seller]]:
     buyers_sorted,sellers_sorted=natural_sorting(buyers,sellers)
     return trading_iterate(buyers_sorted,sellers_sorted,utilities,k=k) # return buyers, sellers 
 
-def uni_kda(k,buyers,sellers,utilities):
+def uni_kda(k: float, 
+            buyers: List[Buyer], 
+            sellers: List[Seller], 
+            utilities: List[str]) -> Tuple[List[Buyer],List[Seller]]:
     buyers_sorted,sellers_sorted = natural_sorting(buyers,sellers)
     price = getUniPrice(k,buyers_sorted,sellers_sorted)
     return trading_iterate(buyers_sorted,sellers_sorted,utilities,price=price) # return buyers, sellers 
 
-def weighted_avg(buyers,sellers,utilities):
+def weighted_avg(buyers: List[Buyer], 
+                sellers: List[Seller], 
+                utilities: List[str])-> Tuple[List[Buyer],List[Seller]]:
     buyers_sorted,sellers_sorted=natural_sorting(buyers,sellers)
     price = getAvgPrice(buyers_sorted)
     return trading_iterate(buyers_sorted,sellers_sorted,utilities,price=price) # return buyers, sellers 
 
-def trading_iterate(buyers,sellers,utilities,price=-1,k=0):
+def trading_iterate(buyers: List[Buyer], 
+                    sellers: List[Seller], 
+                    utilities: List[str], 
+                    price : Optional[float] = None, 
+                    k: float = 0.5)-> Tuple[List[Buyer],List[Seller]]:
     for buyer in buyers:
         if(buyer.quantityLeft==0):continue
         for seller in sellers:
@@ -35,7 +48,7 @@ def trading_iterate(buyers,sellers,utilities,price=-1,k=0):
                 boughtQuantity = buyer.quantityLeft
                 seller.quantityLeft -= buyer.quantityLeft
                 buyer.quantityLeft=0
-            if(price==-1): price = getDisPrice(k,buyer.bidPrice,seller.reservePrice)
+            if(price == None): price = getDisPrice(k,buyer.bidPrice,seller.reservePrice)
             buyer.transaction.append(Transaction(seller.id,boughtQuantity,price))
             buyer.totalBoughtPrice += round(price*boughtQuantity,2)
             seller.transaction.append(Transaction(buyer.id,boughtQuantity,price))
@@ -50,8 +63,9 @@ def trading_iterate(buyers,sellers,utilities,price=-1,k=0):
     buyersResult,sellersResult = updateEvalutaionIndex(buyersComplete,sellersComplete)
     return buyersResult,sellersResult
 
-def addingGrid(buyers,sellers,utilities):
-
+def addingGrid(buyers: List[Buyer],
+                sellers: List[Seller],
+                utilities: List[str]) -> Tuple[List[Buyer],List[Seller]]:
     totalQuantityWantLeft=sum([buyer.quantityWant for buyer in buyers])
     totalQuantityAvailableLeft=sum([seller.quantityAvailable for seller in sellers])
     
@@ -77,7 +91,7 @@ def addingGrid(buyers,sellers,utilities):
         buyers.append(grid)
     return buyers,sellers
 
-def natural_sorting(buyers,sellers):
+def natural_sorting(buyers: List[Buyer],sellers: List[Seller]) -> Tuple[List[Buyer],List[Seller]]:
     buyersSortedTime=sorted(buyers,key=lambda buyer: buyer.timestamp, reverse=True)
     sellerSortedTime=sorted(sellers,key=lambda seller: seller.timestamp, reverse=False)
     return sorted(buyersSortedTime,key=lambda buyer: buyer.bidPrice, reverse=True),sorted(sellerSortedTime,key=lambda seller: seller.reservePrice, reverse=False)
