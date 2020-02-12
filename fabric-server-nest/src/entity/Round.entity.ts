@@ -4,6 +4,12 @@ import { BuyTransaction } from './BuyTransaction.entity';
 import BuyerBid from './BuyerBid.entity';
 import SellerBid from './SellerBid.entity';
 
+export enum MarketClearingStrategy {
+    DISKDA = 'disKDA',
+    UNIKDA = 'uniKDA',
+    WEIGHTEDAVG = 'weightedAVG',
+}
+
 @Entity()
 export default class Round {
     @PrimaryGeneratedColumn('uuid')
@@ -29,6 +35,12 @@ export default class Round {
         default: true,
     })
     isActive: boolean;
+ 
+    @Column({
+        type: 'enum',
+        enum: MarketClearingStrategy,
+    })
+    strategy: MarketClearingStrategy;
 
     @OneToMany(_ => SellTransaction, sellerTransaction => sellerTransaction.round)
     sellTransactions: SellTransaction[];
