@@ -1,5 +1,5 @@
 class Transaction:
-    def __init__(self, id, quantity, price): 
-        self.id=id
-        self.quantity = round(quantity,3)
-        self.price = round(price,2)
+    def __init__(self, id: str, quantity: float, price: float): 
+        self.id: str = id
+        self.quantity: float = round(quantity,3)
+        self.price: float = round(price,2)

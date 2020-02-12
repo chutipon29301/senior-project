@@ -19,25 +19,29 @@ def test():
     return data
 
 @app.route('/disKDA', methods=['POST'])
-def disKDA():
+def disKDA()->str:
     data = json.loads(request.get_data())
-    buyers,sellers,utilities = getUsers(data)
+    buyers,sellers,utilities = getUsers(**data)
     buyers_result,sellers_result = dis_kda(k,buyers,sellers,utilities)
-    return getResult(buyers_result,sellers_result)
+    res = getResult(buyers_result,sellers_result)
+    return json.dumps(res.__dict__)
     
 @app.route('/uniKDA', methods=['POST'])
-def uniKDA():
+def uniKDA()->str:
     data = json.loads(request.get_data())
-    buyers,sellers,utilities = getUsers(data)
+    buyers,sellers,utilities = getUsers(**data)
     buyers_result,sellers_result = uni_kda(k,buyers,sellers,utilities)
-    return getResult(buyers_result,sellers_result)
+    res = getResult(buyers_result,sellers_result)
+    return json.dumps(res.__dict__)
 
 @app.route('/weightedAvg', methods=['POST'])
-def weightedAvg():
+def weightedAvg()->str:
     data = json.loads(request.get_data())
-    buyers,sellers,utilities = getUsers(data)
+    buyers,sellers,utilities = getUsers(**data)
     buyers_result,sellers_result = weighted_avg(buyers,sellers,utilities)
-    return getResult(buyers_result,sellers_result)
+    res = getResult(buyers_result,sellers_result)
+    return json.dumps(res.__dict__)
+
 
 if __name__ == '__main__':
     app.run()
