@@ -14,6 +14,9 @@ export default class SellerBid{
     @CreateDateColumn()
     timestamp: Date;
 
+    @Column()
+    userId: string;
+
     @ManyToOne(_ => User, user => user.sellerBids)
     user: User;
 
