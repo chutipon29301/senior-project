@@ -20,19 +20,31 @@ export class OfferService {
         const round = await this.roundService.findOneOrCreate(date, user);
         switch (user.organization) {
             case Organization.Building:
-                const buyerBid = new BuyerBid();
-                buyerBid.price = price;
-                buyerBid.user = user;
-                buyerBid.round = round;
-                await this.buyerBidRepository.save(buyerBid);
-                return this.fabricService.addBuyerBid(round.id, price, user.organization, user.id);
+                const buyerPreviousBid = round.buyerBids.find(o => o.userId === user.id);
+                if (buyerPreviousBid) {
+                    buyerPreviousBid.price = price;
+                    await this.buyerBidRepository.save(buyerPreviousBid);
+                } else {
+                    const buyerBid = new BuyerBid();
+                    buyerBid.price = price;
+                    buyerBid.user = user;
+                    buyerBid.round = round;
+                    await this.buyerBidRepository.save(buyerBid);
+                }
+                await this.fabricService.addBuyerBid(round.id, price, user.organization, user.id);
             case Organization.PV:
-                const sellerBid = new SellerBid();
-                sellerBid.price = price;
-                sellerBid.user = user;
-                sellerBid.round = round;
-                await this.sellerBidRepository.save(sellerBid);
-                return this.fabricService.addSellerBid(round.id, price, user.organization, user.id);
+                const sellerPreviousBid = round.sellerBids.find(o => o.userId === user.id);
+                if (sellerPreviousBid) {
+                    sellerPreviousBid.price = price;
+                    await this.sellerBidRepository.save(sellerPreviousBid);
+                } else {
+                    const sellerBid = new SellerBid();
+                    sellerBid.price = price;
+                    sellerBid.user = user;
+                    sellerBid.round = round;
+                    await this.sellerBidRepository.save(sellerBid);
+                }
+                await this.fabricService.addSellerBid(round.id, price, user.organization, user.id);
             case Organization.Utility:
                 throw new UnauthorizedException();
         }
