@@ -22,5 +22,5 @@ async def list_smartmeter_value(timestamp: datetime = Query(None)):
         filter_date_df.set_index('Time', inplace = True)
         quantity_row = filter_date_df.between_time(timestamp.time(), next_hr.time())
         quantity_dict = quantity_row.to_dict(orient = 'records')[0]
-        return [{'name':key,'quantity': value} for key, value in quantity_dict.items()]
+        return [{ 'id' : key, 'quantity' : value } for key, value in quantity_dict.items()]
         
