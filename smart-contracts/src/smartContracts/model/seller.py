@@ -1,19 +1,22 @@
+import datetime
+from typing import List
+from .transaction import Transaction
 class Seller:
-    def __init__(self,id,quantity,bidPrice,timestamp,isGrid=False):
-        self.id=id
-        self.isGrid=isGrid
+    def __init__(self, id: str, quantity: float, bidPrice: float, timestamp: datetime, isGrid: bool = False):
+        self.id: str = id
+        self.isGrid: bool = isGrid
         
         if(isGrid):
-            self.quantityLeft = 0
-            self.ssi=1
+            self.quantityLeft: float = 0
+            self.ssi: float = 1
         else: 
-            self.quantityLeft = round(quantity,2)
-            self.ssi=0
+            self.quantityLeft: float = round(quantity,2)
+            self.ssi: float = 0
 
-        self.quantityAvailable = round(quantity,2)
-        self.timestamp=timestamp
-        self.reservePrice = bidPrice
-        self.transaction=[]
-        self.totalSoldPrice=0
-        self.avgSoldPrice=0
-        self.utilityIndex=0
+        self.quantityAvailable: float = round(quantity,2)
+        self.timestamp: datetime = timestamp
+        self.reservePrice: float = bidPrice
+        self.transaction: List[Transaction] = []
+        self.totalSoldPrice: float = 0
+        self.avgSoldPrice: float = 0
+        self.utilityIndex: float = 0
