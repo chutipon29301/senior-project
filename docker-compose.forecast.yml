@@ -1,0 +1,11 @@
+version: '3.7'
+
+services: 
+  forecast.example.com:
+    container_name: forecast.example.com
+    build: ./forecast
+    volumes: 
+      - ./forecast:/home/forecast
+    command: uvicorn main:app --reload --host 0.0.0.0
+    ports: 
+      - 3002:8000
