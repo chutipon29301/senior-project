@@ -8,6 +8,17 @@ import { ChannelRequest, Channel, ProposalResponse } from 'fabric-client';
 import { Organization } from '../entity/User.entity';
 import { ChaincodeRoundDto } from './fabric.dto';
 
+function CheckFabricOptions() {
+    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+        descriptor.value = () => {
+            if (process.env.USE_FABRIC === 'false') {
+                throw new BadRequestException('Fabric service is not enable set environment variable "USE_FABRIC" to true to enable fabric');
+            }
+        };
+        return descriptor;
+    };
+}
+
 @Injectable()
 export class FabricService {
 
@@ -23,15 +34,15 @@ export class FabricService {
      * User Management
      */
 
+    @CheckFabricOptions()
     public async checkExistUser(username: string, organization: Organization): Promise<boolean> {
-        this.logger.info('================== Find user ==================');
         const client = await this.getClientForOrganization(organization);
         const user = await client.getUserContext(username, true);
         return user && user.isEnrolled();
     }
 
+    @CheckFabricOptions()
     public async createUser(username: string, organization: Organization) {
-        this.logger.info('================= Create user =================');
         const isEnrolled = await this.checkExistUser(username, organization);
         if (isEnrolled) {
             throw new BadRequestException(`User with username "${username}" already exist`);
@@ -54,8 +65,8 @@ export class FabricService {
      * Channel Management
      */
 
+    @CheckFabricOptions()
     public async getPeersNameInOrg(organization: Organization): Promise<string[]> {
-        this.logger.info('================= Get peers in org =================');
         const client = await this.getClientForOrganization(organization);
         if (!client) {
             throw new BadRequestException('Organization not found');
@@ -68,8 +79,8 @@ export class FabricService {
      * Channel Management
      */
 
+    @CheckFabricOptions()
     public async getChannel(organization: Organization): Promise<Channel | null> {
-        this.logger.info('================= Get channel =================');
         const client = await this.getClientForOrganization(organization);
         try {
             return client.getChannel(this.channelName);
@@ -78,8 +89,8 @@ export class FabricService {
         }
     }
 
+    @CheckFabricOptions()
     public async listChannelNameInPeer(peer: string, organization: Organization, username: string): Promise<string[]> {
-        this.logger.info('================= List channel name in peer =================');
         const client = await this.getClientForOrganization(organization);
         if (!client) {
             throw new BadRequestException('Organization not found');
@@ -93,8 +104,8 @@ export class FabricService {
         }
     }
 
+    @CheckFabricOptions()
     public async createChannel(organization: Organization) {
-        this.logger.info('================= Create channel =================');
         const client = await this.getClientForOrganization(organization);
         const channel = await this.getChannel(organization);
         if (!channel) {
@@ -116,8 +127,8 @@ export class FabricService {
         }
     }
 
+    @CheckFabricOptions()
     public async joinChannel(organization: Organization) {
-        this.logger.info('================= Join channel =================');
         const client = await this.getClientForOrganization(organization);
         const channel = await this.getChannel(organization);
         const peers = await this.getPeersNameInOrg(organization);
@@ -140,8 +151,8 @@ export class FabricService {
      * Chaincode Management
      */
 
+    @CheckFabricOptions()
     public async installChaincode(organization: Organization) {
-        this.logger.info('================= Install chaincode =================');
         const client = await this.getClientForOrganization(organization);
         const peers = await this.getPeersNameInOrg(organization);
         const [response] = await client.installChaincode({
@@ -157,10 +168,8 @@ export class FabricService {
         }
     }
 
-    public async instantiateChaincode(
-        organizationName: string,
-    ) {
-        this.logger.info('================= Instantiate chaincode =================');
+    @CheckFabricOptions()
+    public async instantiateChaincode(organizationName: string) {
         const client = await this.getClientForOrganization(organizationName);
         const channel = client.getChannel(this.channelName);
         const txId = client.newTransactionID(true);
@@ -222,6 +231,7 @@ export class FabricService {
         }
     }
 
+    @CheckFabricOptions()
     public async invokeChaincode(
         fcn: string,
         args: string[],
@@ -283,6 +293,7 @@ export class FabricService {
         }
     }
 
+    @CheckFabricOptions()
     public async queryChaincode(
         args: string[],
         fcn: string,
@@ -311,19 +322,23 @@ export class FabricService {
      * Chaincode function
      */
 
+    @CheckFabricOptions()
     public async createRound(id: string, organization: Organization, username: string) {
         await this.invokeChaincode('createRound', [id, (new Date()).toISOString()], organization, username);
     }
 
+    @CheckFabricOptions()
     public async addSellerBid(roundId: string, price: number, organization: Organization, username: string) {
         await this.invokeChaincode('addSellerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
     }
 
+    @CheckFabricOptions()
     public async addBuyerBid(roundId: string, price: number, organization: Organization, username: string) {
         await this.invokeChaincode('addBuyerBid', [roundId, username, `${price}`, (new Date()).toISOString()], organization, username);
     }
 
-    public async getChaincode(id: string, organization: Organization, username: string): Promise<ChaincodeRoundDto> {
+    @CheckFabricOptions()
+    public async getRound(id: string, organization: Organization, username: string): Promise<ChaincodeRoundDto> {
         const result = await this.queryChaincode([id], 'getRound', organization, username);
         const resultObject = JSON.parse(result) as ChaincodeRoundDto;
         return resultObject;
@@ -333,6 +348,7 @@ export class FabricService {
      * Private functions
      */
 
+    @CheckFabricOptions()
     private async getClientForOrganization(
         organizationName: string,
     ): Promise<Client> {

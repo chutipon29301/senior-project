@@ -7,9 +7,10 @@ import SellerBid from '../entity/SellerBid.entity';
 import BuyerBid from '../entity/BuyerBid.entity';
 import Round from '../entity/Round.entity';
 import { RoundModule } from '../round/round.module';
+import { ConfigModule } from '../config/config.module';
 
 @Module({
-  imports: [FabricModule, RoundModule, TypeOrmModule.forFeature([SellerBid, BuyerBid])],
+  imports: [FabricModule, RoundModule, ConfigModule, TypeOrmModule.forFeature([SellerBid, BuyerBid])],
   providers: [OfferService],
   controllers: [OfferController],
 })

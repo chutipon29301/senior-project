@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import Round from '../entity/Round.entity';
 import { FabricService } from '../fabric/fabric.service';
 import User from '../entity/User.entity';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class RoundService {
@@ -11,6 +12,7 @@ export class RoundService {
     constructor(
         @InjectRepository(Round) private readonly roundRepository: Repository<Round>,
         private readonly fabricService: FabricService,
+        private readonly configService: ConfigService,
     ) { }
 
     public async createRound(startDate: Date, endDate: Date, { organization, id }: User): Promise<Round> {
@@ -18,7 +20,9 @@ export class RoundService {
         round.startDate = startDate;
         round.endDate = endDate;
         await this.roundRepository.save(round);
-        await this.fabricService.createRound(round.id, organization, id);
+        if (this.configService.useFabric) {
+            await this.fabricService.createRound(round.id, organization, id);
+        }
         return round;
     }
 

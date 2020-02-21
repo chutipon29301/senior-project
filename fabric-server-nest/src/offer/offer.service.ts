@@ -6,14 +6,16 @@ import BuyerBid from '../entity/BuyerBid.entity';
 import { Repository } from 'typeorm';
 import SellerBid from '../entity/SellerBid.entity';
 import { RoundService } from '../round/round.service';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class OfferService {
     constructor(
-        private readonly fabricService: FabricService,
-        private readonly roundService: RoundService,
         @InjectRepository(BuyerBid) private buyerBidRepository: Repository<BuyerBid>,
         @InjectRepository(SellerBid) private sellerBidRepository: Repository<SellerBid>,
+        private readonly fabricService: FabricService,
+        private readonly roundService: RoundService,
+        private readonly configService: ConfigService,
     ) { }
 
     public async createOffer(date: Date, price: number, user: User) {
@@ -39,7 +41,9 @@ export class OfferService {
                     buyerBid.round = round;
                     await this.buyerBidRepository.save(buyerBid);
                 }
-                await this.fabricService.addBuyerBid(round.id, price, user.organization, user.id);
+                if (this.configService.useFabric) {
+                    await this.fabricService.addBuyerBid(round.id, price, user.organization, user.id);
+                }
                 break;
             case Organization.PV:
                 if (round.sellerBids) {
@@ -61,7 +65,9 @@ export class OfferService {
                     sellerBid.round = round;
                     await this.sellerBidRepository.save(sellerBid);
                 }
-                await this.fabricService.addSellerBid(round.id, price, user.organization, user.id);
+                if (this.configService.useFabric) {
+                    await this.fabricService.addSellerBid(round.id, price, user.organization, user.id);
+                }
                 break;
             case Organization.Utility:
                 throw new UnauthorizedException();

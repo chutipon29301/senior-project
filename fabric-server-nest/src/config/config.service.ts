@@ -42,6 +42,10 @@ export class ConfigService {
         return 'Hello';
     }
 
+    get useFabric(): boolean {
+        return process.env.USE_FABRIC !== 'false';
+    }
+
     public getFabricAdminContextForOrg(organization: Organization): { username: string, password: string } {
         switch (organization) {
             case Organization.Building:

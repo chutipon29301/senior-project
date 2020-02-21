@@ -23,6 +23,7 @@ services:
       PV_ADMIN_PASSWORD: adminpw
       UTILITY_ADMIN_USERNAME: admin
       UTILITY_ADMIN_PASSWORD: adminpw
+      USE_FABRIC: 'false'
     ports:
       - 3000:3000
   mysql.example.com:
