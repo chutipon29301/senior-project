@@ -4,7 +4,7 @@ class Service():
     """Sets of command to manage docker services"""
 
     absPath = os.path.abspath(os.curdir)
-    services = ['jupyter', 'nest', 'smartcontract', 'fabric', 'smartmeter']
+    services = ['jupyter', 'nest', 'smartcontract', 'fabric', 'smartmeter', 'forecast']
 
     def list(self):
         """
@@ -44,7 +44,6 @@ class Service():
         """
         Stop services; Usage: python main.py service stopAll
         """
-        print('Stopping services...\n')
         for service in self.services:
             self.stop(service)
 
@@ -63,6 +62,8 @@ class Service():
             os.system('docker-compose -f %s/docker-compose.smartcontract.yml up -d' % self.absPath)
         elif serviceName == 'smartmeter':
             os.system('docker-compose -f %s/docker-compose.smartmeter.yml up -d' % self.absPath)
+        elif serviceName == 'forecast':
+            os.system('docker-compose -f %s/docker-compose.forecast.yml up -d' % self.absPath)
         elif serviceName == 'fabric':
             os.system('docker-compose -f %s/fabric-server-nest/artifacts/docker-compose.yaml up -d' % self.absPath)
         
@@ -75,5 +76,7 @@ class Service():
             os.system('docker-compose -f %s/docker-compose.smartcontract.yml down' % self.absPath)
         elif serviceName == 'smartmeter':
             os.system('docker-compose -f %s/docker-compose.smartmeter.yml down' % self.absPath)
+        elif serviceName == 'forecast':
+            os.system('docker-compose -f %s/docker-compose.forecast.yml down' % self.absPath)
         elif serviceName == 'fabric':
             os.system('docker-compose -f %s/fabric-server-nest/artifacts/docker-compose.yaml down' % self.absPath)        
