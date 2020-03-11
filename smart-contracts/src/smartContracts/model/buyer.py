@@ -1,6 +1,7 @@
 import datetime
 from typing import List
 from .transaction import Transaction
+
 class Buyer:
     def __init__(self, id: str, quantity: float, bidPrice: float, timestamp: datetime, isGrid: bool = False):
         self.id: str = id
@@ -19,3 +20,6 @@ class Buyer:
         self.avgBoughtPrice: float = 0
         self.transaction: List[Transaction] = []
         self.utilityIndex: float = 0
+
+    def __str__(self):
+        return str(self.__dict__)

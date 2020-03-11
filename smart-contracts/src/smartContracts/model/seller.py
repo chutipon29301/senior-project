@@ -20,3 +20,5 @@ class Seller:
         self.totalSoldPrice: float = 0
         self.avgSoldPrice: float = 0
         self.utilityIndex: float = 0
+    def __str__(self):
+        return str(self.__dict__)
