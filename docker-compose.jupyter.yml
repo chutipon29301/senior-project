@@ -5,7 +5,11 @@ services:
     container_name: jupyter.example.com
     build: ./jupyter
     volumes: 
-      - ./jupyter:/home/jovyan/work
+      - ./jupyter/smartContract:/home/jovyan/work/smartContract
+      - ./jupyter/data:/home/jovyan/work/data
+      - ./jupyter/rlAgentTest:/home/jovyan/work/rlAgentTest
+      - ./bidding-strategy/src/model:/home/jovyan/work/model
+      - ./bidding-strategy/src/biddingModule:/home/jovyan/work/biddingModule
     environment: 
       GRANT_SUDO: 'yes'
     ports: 
