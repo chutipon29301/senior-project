@@ -42,10 +42,11 @@ class MarketEngine:
         that were matched in that round.
     """
 
-    def __init__(self, buyers, sellers, max_steps=30):
+    def __init__(self, buyers, sellers, strategy, max_steps=30):
         self.buyers = set(buyers)
         self.sellers = set(sellers)
         self.agents = self.buyers.union(self.sellers)
+        self.strategy = strategy
         self.max_steps = max_steps
         self.reset()
 
@@ -86,12 +87,11 @@ class MarketEngine:
             elif agent_id in self.buyers:
                 bids.append((offer['price'], offer['quantity'], agent_id))
             elif agent_id in self.sellers:
-                # print(offer['price'], offer['quantity'], agent_id)
                 asks.append((offer['price'], offer['quantity'], agent_id))
             else:
                 raise RuntimeError(f"Received offer from unkown agent {agent_id}")
         
-        deals = self.match(bids, asks)
+        deals, quantitiesTradeIn = self.match(bids, asks, self.strategy)
         self.deal_history.append(deals)
         self.offer_history.append((bids, asks))
         self.time += 1
@@ -104,10 +104,10 @@ class MarketEngine:
            or self.sellers.issubset(self.done):
             self.done = self.agents
 
-        return deals
+        return deals, quantitiesTradeIn
 
     @staticmethod
-    def match(bids, asks):
+    def match(bids, asks, strategy):
         """
         Core matching algorithm for market engine.
 
@@ -151,17 +151,22 @@ class MarketEngine:
         } for j in range(len(asks))]
         data = {"buyers":buyers,"sellers":sellers,"utilities":["utility"]}
         API_ENDPOINT = "http://smartcontract.example.com:5000"
-        # url=API_ENDPOINT+'/uniKDA'
-        url=API_ENDPOINT+'/disKDA'
+        url=API_ENDPOINT+f'/{strategy.value}'
+        # 'url=API_ENDPOINT+'/uniKDA'
+        # url=API_ENDPOINT+'/disKDA'
         # url=API_ENDPOINT+'/weightedAvg'
         r = requests.post(url = url, json = data) 
         # extracting response text
         result = json.loads(r.text)
+        quantity_inSystem = dict()
         deals = dict()
         for agent in buyers:
             deals[agent['id']] = [buyer['avgBoughtPrice'] for buyer in result['buyers'] if buyer['id'] == agent['id']][0]
+            quantity_inSystem[agent['id']]= [buyer['quantityWant']-buyer['quantityLeft'] for buyer in result['buyers'] if buyer['id'] == agent['id']][0]
         for agent in sellers:
             deals[agent['id']] = [seller['avgSoldPrice'] for seller in result['sellers'] if seller['id'] == agent['id']][0]
+            quantity_inSystem[agent['id']] = [seller['quantityAvailable']-seller['quantityLeft'] for seller in result['sellers'] if seller['id'] == agent['id']][0]
+        
         # print(data,"\n===========\n",deals)
-        return deals
+        return deals,quantity_inSystem
 

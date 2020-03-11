@@ -113,7 +113,6 @@ class UniformRandomAgent(FactorAgent):
     """
 
     def get_offer(self, observation):
-        
         return np.random.uniform(self._a, self._b)
 
 
@@ -203,7 +202,8 @@ class GymRLAgent(FactorAgent):
     def get_offer(self, observation):
         if not self.model:
             raise RuntimeError("Current agent does not have a model")
-        action = self.model.predict(self.normalize(observation))[0]
+        # action = self.model.predict(self.normalize(observation))[0] #case normal model
+        action = self.model.predict([self.normalize(observation)])[0][0] #case recurrent model, normalized price
         return self.action_to_price(action)
 
     def normalize(self, observation):
