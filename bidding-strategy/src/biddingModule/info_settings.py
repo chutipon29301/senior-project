@@ -1,6 +1,6 @@
 import numpy as np
 from gym.spaces import Discrete, Box, Tuple
-from biddingModule.modeDTO import Mode
+from biddingModule.modeDTO import Mode,Strategy
 from biddingModule.loadPVservice import StaticDataService
 class InformationSetting:
     """
@@ -12,8 +12,9 @@ class InformationSetting:
         The specification of the observation space under this setting.
     """
 
-    def __init__(self, spliting_factor=0.8, mode= Mode.ALL):
+    def __init__(self, spliting_factor=0.8,mode= Mode.ALL, strategy = Strategy.DISKDA):
         self.mode = mode
+        self.strategy = strategy
         loadService=StaticDataService()
         df= loadService.df
         if(mode!=Mode.ALL and spliting_factor<1 and spliting_factor>0 ):
@@ -102,8 +103,8 @@ class OfferInformationSetting(InformationSetting):
         contains the bids and second row the asks. No offers will be
         represented by 0.
     """
-    def __init__(self, n_offers=5, spliting_factor=0.8, mode= Mode.ALL):
-        super().__init__(spliting_factor, mode)
+    def __init__(self, n_offers=5, spliting_factor=0.8, mode= Mode.ALL, strategy= Strategy.DISKDA):
+        super().__init__(spliting_factor, mode, strategy)
         self.n_offers = n_offers
         self.observation_space = Box(low=0, high=np.infty, shape=[2, n_offers])
 
@@ -112,11 +113,12 @@ class OfferInformationSetting(InformationSetting):
         offers = np.zeros(shape=(2, n))
         if not market.offer_history:
             return {agent_id: offers for agent_id in agent_ids}
-
         bids, asks = market.offer_history[-1]
-        for i, (bid,quantity, agent_id) in enumerate(bids[0:n]): offers[0][i] = bid
-        for i, (ask,quantity, agent_id) in enumerate(asks[0:n]): offers[1][i] = ask
-        # The information each agent gets is the same
+        for i, (bid, quantity, agent_id) in enumerate(bids[0:n]): 
+            offers[0][i] = bid
+        for i, (ask, quantity, agent_id) in enumerate(asks[0:n]): 
+            offers[1][i] = ask
+        # The information each agent gets is the same for offers, quantityTradeIn will be different
         return {agent_id: offers for agent_id in agent_ids}
 
 class DealInformationSetting(InformationSetting):

@@ -38,7 +38,7 @@ class MultiAgentTrainingEnv(gym.Env):
     market: MarketEngine object
         The underlying market engine object.
     """
-    def __init__(self, rl_agents, fixed_agents, setting, max_steps=30):
+    def __init__(self, rl_agents, fixed_agents, setting, strategy, max_steps=30):
         self.iterate_round=0
         self.rl_agents = {
             rl_agent.name: rl_agent for rl_agent in rl_agents
@@ -75,9 +75,9 @@ class MultiAgentTrainingEnv(gym.Env):
             if agent.role == 'seller'
         ]
 
-        self.market = MarketEngine(buyer_ids, seller_ids, max_steps)
+        self.market = MarketEngine(buyer_ids, seller_ids, setting.strategy, max_steps)
     
-    def _get_rewards(self, agent_ids, deals):
+    def _get_rewards(self, agent_ids, deals, trade_quantity):
         """
         Compute the reward of each agent given the deals in the last round.
         """
@@ -87,10 +87,13 @@ class MultiAgentTrainingEnv(gym.Env):
                 agent = self.all_agents[agent_id]
                 sign = (-1 if agent.role == 'buyer' else 1)
                 res_price = agent.reservation_price
-                result[agent_id] = (deals[agent_id] - res_price)*sign
+                quantity_got=trade_quantity[agent_id]
+                result[agent_id] = (sign*(deals[agent_id] - res_price))*quantity_got
+                # result[agent_id] =  (deals[agent_id] - res_price) * sign
                 if(result[agent_id]<0):result[agent_id]=0 #case: no energy to sell(deal=0 while reserve price=1.68) or no demand
                 # print("===============")
-                # print("deal:",deals[agent_id],"\nreserve_price:",res_price)
+                # print("deal:",deals[agent_id],"\nreserve_price:",res_price,"\nprev_quantity:", quantity_got )
+                # print(agent_id,"reward:",result[agent_id])
             else:
                 result[agent_id] = 0
         return result
@@ -130,17 +133,16 @@ class MultiAgentTrainingEnv(gym.Env):
             Contains additionally a string key ``__all__`` to indicate
             whether every agent is done.
         """
-        # print("multi agent actions:",actions)
-        # print(self.iterate_round)
         # Get dict of fixed agents that aren't yet done
         other_agents = {
             agent.name: agent for agent in self.fixed_agents.values()
             if agent.name not in self.market.done
         }
-        # First get offers of other fixed agents
+        # First get offers of other fixed agents, unable to learn from historical data only random
         obs = self.setting.get_states(other_agents.keys(), self.market)
         offers = {
-            agent.name: {'price': agent.get_offer(obs[agent.name]), 'quantity': self.setting.getAgentQuantity(self.iterate_round,agent.name)}
+            agent.name: {'price': agent.get_offer(obs[agent.name]), 'quantity': self.setting.getAgentQuantity(self.iterate_round,agent.name)} 
+            # get_offer of past obs gives new offer price but the quantity is fixed from smart meter (building demand)
             for agent in other_agents.values()
         }
 
@@ -155,11 +157,10 @@ class MultiAgentTrainingEnv(gym.Env):
             }
 
         # Step the market
-        deals = self.market.step(offers)
+        deals, trade_quantity = self.market.step(offers)
 
         self.iterate_round+=1
-
-        # Obs, done, rewards for RL agents
+        # Obs, done, rewards for RL agents, be able to learn from historical data
         obs = self.rl_setting.get_states(rl_agent_ids, self.market)
         for rl_agent_id in obs.keys(): # Normalize each observation
             obs[rl_agent_id] = self.rl_agents[rl_agent_id].normalize(
@@ -170,16 +171,14 @@ class MultiAgentTrainingEnv(gym.Env):
             for rl_agent_id in rl_agent_ids
         }
         done["__all__"] = (rl_agent_ids.issubset(self.market.done))
-        rew = self._get_rewards(rl_agent_ids, deals)
+        rew = self._get_rewards(rl_agent_ids, deals, trade_quantity)
         return obs, rew, done, {}
 
 
 class SingleAgentTrainingEnv(MultiAgentTrainingEnv):
     """
     Gym environment for training single RL agents.
-
     This environment is compatible with stable_baselines.
-
     Parameters
     ----------
     rl_agent: GymRLAgent object
