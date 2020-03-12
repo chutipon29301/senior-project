@@ -20,6 +20,7 @@ class Pipeline(object):
         os.environ['STORAGE_DIR'] = os.path.join(dirname, 'tmp')
         os.environ['USER_LIST'] = os.path.join(dirname, 'data/user.csv')
         os.environ['USER_STORAGE'] = os.path.join(os.getenv('STORAGE_DIR'), 'user.csv')
+        os.environ['HOLIDAY_CALENDAR'] = os.path.join(dirname, 'data/thHoliday2563-64.csv')
        
         # Import Grouped command
         self.user = User()
