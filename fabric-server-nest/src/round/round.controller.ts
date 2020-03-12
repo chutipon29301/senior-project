@@ -3,7 +3,7 @@ import Round from '../entity/Round.entity';
 import { RoundService } from './round.service';
 import { Orgs } from '../decorator/org.decorator';
 import User, { Organization } from '../entity/User.entity';
-import { CreateRoundDto } from './round.dto';
+import { CreateRoundDto, ClearMarketDto } from './round.dto';
 import { RequestUser } from '../decorator/user.decorator';
 
 @Controller('round')
@@ -26,5 +26,11 @@ export class RoundController {
     @Get(':id')
     public async getRound(@RequestUser() user: User, @Param('id') id: string) {
         return this.service.getChaincodeInRound(id, user);
+    }
+
+    @Orgs()
+    @Post('clearMarket')
+    public async clearMarket(@RequestUser() user: User, @Body() { roundId }: ClearMarketDto) {
+        return this.service.clearMarket(roundId, user);
     }
 }
