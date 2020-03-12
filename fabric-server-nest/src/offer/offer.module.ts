@@ -10,7 +10,7 @@ import { RoundModule } from '../round/round.module';
 import { ConfigModule } from '../config/config.module';
 
 @Module({
-  imports: [FabricModule, RoundModule, ConfigModule, TypeOrmModule.forFeature([SellerBid, BuyerBid])],
+  imports: [FabricModule, RoundModule, ConfigModule, TypeOrmModule.forFeature([SellerBid, BuyerBid, Round])],
   providers: [OfferService],
   controllers: [OfferController],
 })

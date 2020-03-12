@@ -12,7 +12,7 @@ export class OfferController {
 
     @Orgs(Organization.Building, Organization.PV)
     @Post()
-    public async createOffer(@RequestUser() user: User, @Body() { price ,date}: CreateOfferDto) {
+    public async createOffer(@RequestUser() user: User, @Body() { price, date }: CreateOfferDto) {
         return this.service.createOffer(new Date(date), price, user);
     }
 
