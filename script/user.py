@@ -10,7 +10,6 @@ from pathlib import Path
 
 
 class User():
-
     def __init__(self):
         self.BASE_URL = os.getenv('FABRIC_URL')
         self.USER_LIST = os.getenv('USER_LIST')
@@ -30,7 +29,7 @@ class User():
         print(userInfo)
 
     def createAll(self):
-        df = pd.read_csv(self.USER_LIST)
+        df = pd.read_csv(self.USER_LIST).fillna('')
         bar = ChargingBar('Creating users', max=len(df.index),
                           suffix='%(percent)d%%; Elapsed: %(elapsed)ds; ETA: %(eta)ds')
         for index, row in df.iterrows():
@@ -74,19 +73,29 @@ class User():
                 'name': userResponse['name'],
                 'id': userResponse['id'],
                 'organization': userResponse['organization'],
-                'token': tokenResponse['token']
+                'token': tokenResponse['token'],
+                'smartMeterId': smartMeterId,
             }
 
     async def asyncCreateUser(self, username, organization, smartMeterId, session=None):
         async def createUser(session, username, organization):
-            async with session.post(
-                    urllib.parse.urljoin(self.BASE_URL, 'user'),
-                    data={
-                        "name": username,
-                        "organizationName": organization,
-                        "smartMeterId": smartMeterId
-                    }) as response:
-                return await response.json()
+            if (smartMeterId != ""):
+                async with session.post(
+                        urllib.parse.urljoin(self.BASE_URL, 'user'),
+                            data={
+                                "name": username,
+                                "organizationName": organization,
+                                "smartMeterId": smartMeterId
+                            }) as response:
+                    return await response.json()
+            else:
+                async with session.post(
+                        urllib.parse.urljoin(self.BASE_URL, 'user'),
+                            data={
+                                "name": username,
+                                "organizationName": organization,
+                            }) as response:
+                    return await response.json()
 
         if session == None:
             async with aiohttp.ClientSession() as session:
@@ -107,59 +116,3 @@ class User():
                 return await getToken(session, userId)
         else:
             return await getToken(session, userId)
-
-    # def refreshToken(self):
-    #     usersInfo = pd.read_csv(self.TOKEN_PATH)
-    #     print(usersInfo['token'])
-    #     for index, row in usersInfo.iterrows():
-    #         print(row['token'])
-    #         token = self.userToken(row['id'])
-    #         print(token)
-    #         row.at['token'] = token
-    #     print(usersInfo['token'])
-    #     usersInfo.to_csv(self.TOKEN_PATH, index=False)
-
-        # async def asyncCreateAllUsersAndTokens(self):
-    #     async with aiohttp.ClientSession() as session:
-
-    #         userList = pd.read_csv(os.getenv('USER_LIST'))
-    #         createUserRequests = []
-    #         # print(userList)
-    #         userList.apply(lambda user: createUserRequests.append(self.asyncCreateUser(user['name'], user['organization'], session)), axis = 1)
-    #         # userList.apply(lambda user: createUserRequests.append(asyncio.ensure_future(self.asyncCreateUser(user['name'], user['organization'], session))), axis = 1)
-    #         results = await asyncio.gather(*createUserRequests)
-    #         for result in results:
-    #             print(result)
-    #             print(result.get('id'))
-
-            # task = asyncio.create_task(coro())
-            # result = asyncio.ensure_future(asyncio.gather(*createUserRequests))
-            # print(result)
-            # loop = asyncio.get_event_loop()
-            # print(loop.run_until_complete(asyncio.gather(*createUserRequests)))
-            # loop.close()
-
-            # loop = asyncio.get_event_loop()
-            # createUserResponses = loop.run_until_complete(asyncio.gather(*createUserRequests))
-            # loop.close()
-
-            # print(createUserResponses)
-            # createUserResponses = await asyncio.gather(*createUserRequests)
-            # print(createUserResponses)
-
-            # # # print(createUserResponses)
-            # for user in createUserResponses:
-            #     print(user)
-
-            # # map(lambda ,createUserRequests)
-            # createTokenRequests=[]
-            # loop = asyncio.get_event_loop()
-            # task = asyncio.wait([print(await (r['id'])) for r in createUserRequests])
-            # loop.run_until_complete(task)
-            # for response in createUserRequests :
-            #     print(await response)
-            # createTokenRequests.append(self.asyncGetToken(response['id'], session))
-            # print(createTokenRequests)
-            # createTokenResponses = await asyncio.gather(*createTokenRequests)
-            # print(createUserResponses)
-            # print(createTokenResponses)
