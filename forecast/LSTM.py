@@ -30,9 +30,15 @@ class LSTM():
         session_conf = tf.ConfigProto(intra_op_parallelism_threads = 1, inter_op_parallelism_threads = 1)
         sess = tf.Session(graph = tf.get_default_graph(), config = session_conf)
         K.set_session(sess)
+        self.look_back=1
+        self.minimum_load = 0
+        self.maximum_load = 0
+        self.minimum_outdoor = 0
+        self.maximum_outdoor = 0
+
         
     def read_data(self,filename):
-        global df, minimum, maximum, length_of_col, look_back, X, y, temp1, temp2, X_train, X_val, X_test
+        global X_train, X_val, X_test
         global y_train, y_val, y_test
         df = pd.read_csv(filename)
         df['Time'] = pd.to_datetime(df['Time'])
@@ -41,23 +47,20 @@ class LSTM():
         df.drop(['Time','Windspeed','Pressure','Humidity'],axis=1,inplace=True)
         df = df.round(2)
 
-        minimum = []
-        maximum = []
-        minimum.append(df['Load'].min())
-        maximum.append(df['Load'].max())
+        self.minimum_load = df['Load'].min()
+        self.maximum_load = df['Load'].max()
 
-        minimum.append(df['Outdoor'].min())
-        maximum.append(df['Outdoor'].max())
+        self.minimum_outdoor = df['Outdoor'].min()
+        self.maximum_outdoor= df['Outdoor'].max()
 
         scaler = MinMaxScaler(feature_range=(0, 1))
         df[['Load', 'Outdoor', 'Hour', 'Weekday']] = scaler.fit_transform(df[['Load', 'Outdoor', 'Hour', 'Weekday']])
 
         length_of_col = len(df.columns)
-        look_back = 1
         df1 = df.copy()
         df1.drop(['Outdoor', 'Hour', 'Weekday'], axis = 1, inplace = True)
 
-        for i in range(1,look_back+1):
+        for i in range(1,self.look_back+1):
             SHIFT = i
             df_copy = df1.copy()
             df_copy.rename(columns = {'Load': 'Load_(t-{})'.format(SHIFT)}, inplace = True)
@@ -80,9 +83,9 @@ class LSTM():
         y_val = y[temp1:temp1+temp2]
         y_test = y[temp1+temp2:]
 
-        X_train = X_train.reshape((X_train.shape[0], look_back, length_of_col))
-        X_test = X_test.reshape((X_test.shape[0], look_back, length_of_col))
-        X_val = X_val.reshape((X_val.shape[0], look_back, length_of_col))
+        X_train = X_train.reshape((X_train.shape[0], self.look_back, length_of_col))
+        X_test = X_test.reshape((X_test.shape[0], self.look_back, length_of_col))
+        X_val = X_val.reshape((X_val.shape[0], self.look_back, length_of_col))
 
         return # Please  
 
@@ -95,7 +98,7 @@ class LSTM():
 
         model = Sequential()
 
-        model.add((LSTM(units=20, return_sequences=True, input_shape=(look_back, X_train.shape[2]), activation='relu')))
+        model.add((LSTM(units=20, return_sequences=True, input_shape=(self.look_back, X_train.shape[2]), activation='relu')))
         model.add((LSTM(units=10, return_sequences=True, activation='relu')))
         model.add(Flatten())
         model.add(Dense(units = 1,activation='sigmoid'))
@@ -120,11 +123,11 @@ class LSTM():
         trainPredict = model.predict(X_train)
         testPredict = model.predict(X_test)
 
-        trainPredict = trainPredict*(maximum[0]-minimum[0]) + minimum[0]
-        y_train = y_train*(maximum[0]-minimum[0]) + minimum[0]
+        trainPredict = trainPredict*(self.maximum_load-self.minimum_load) + self.minimum_load
+        y_train = y_train*(self.maximum_load-self.minimum_load) + self.minimum_load
 
-        testPredict = testPredict*(maximum[0]-minimum[0]) + minimum[0]
-        y_test = y_test*(maximum[0]-minimum[0]) + minimum[0]
+        testPredict = testPredict*(self.maximum_load-self.minimum_load) + self.minimum_load
+        y_test = y_test*(self.maximum_load-self.minimum_load) + self.minimum_load
 
         trainPredict = trainPredict.reshape(trainPredict.shape[0])
         testPredict = testPredict.reshape(testPredict.shape[0])
