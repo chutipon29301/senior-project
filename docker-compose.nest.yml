@@ -26,6 +26,8 @@ services:
       USE_FABRIC: 'false'
     ports:
       - 3000:3000
+    depends_on: 
+      - mysql.example.com
   mysql.example.com:
     image: mysql:5.7
     container_name: mysql.example.com
