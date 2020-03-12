@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { SellTransaction } from './SellTransaction.entity';
-import { BuyTransaction } from './BuyTransaction.entity';
+import BuyTransaction from './BuyTransaction.entity';
 import BuyerBid from './BuyerBid.entity';
 import SellerBid from './SellerBid.entity';
+import User from './User.entity';
 
 export enum MarketClearingStrategy {
     DISKDA = 'disKDA',
@@ -26,21 +27,20 @@ export default class Round {
     })
     mti: number;
 
-    @Column('float', {
-        nullable: true,
-    })
-    marketPrice: number;
-
     @Column({
         default: true,
     })
     isActive: boolean;
- 
+
     @Column({
         type: 'enum',
         enum: MarketClearingStrategy,
+        default: MarketClearingStrategy.DISKDA,
     })
     strategy: MarketClearingStrategy;
+
+    @Column()
+    modifyDate: Date;
 
     @OneToMany(_ => SellTransaction, sellerTransaction => sellerTransaction.round)
     sellTransactions: SellTransaction[];
