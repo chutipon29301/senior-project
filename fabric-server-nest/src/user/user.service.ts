@@ -13,7 +13,7 @@ export class UserService {
         private readonly configService: ConfigService,
     ) { }
 
-    public async createUser(name: string, organization: Organization, smartMeterId: string): Promise<User> {
+    public async createUser(name: string, organization: Organization, smartMeterId?: string): Promise<User> {
         const user = new User();
         user.name = name;
         user.organization = organization;
