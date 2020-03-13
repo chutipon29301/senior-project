@@ -20,6 +20,8 @@ def getDisPrice(k: float, bidPrice: float, reservePrice: float) -> float:
 
 
 def getUniPrice(k: float, buyers: List[Buyer], sellers: List[Seller]) -> float:
+    if(buyers[0].bidPrice<sellers[0].reservePrice): 
+        return k * buyers[0].bidPrice + (1-k) * sellers[0].reservePrice
     buyerPoints, sellerPoints = generatePoints(buyers, sellers)
     buyerIntersectPoints, sellerIntersectPoints, intercept = findIntersection(buyerPoints, sellerPoints)
     buyerPrice, sellerPrice = getIntersectPrices(buyerIntersectPoints, sellerIntersectPoints, intercept)
@@ -45,12 +47,12 @@ def generatePoints(buyers: List[Buyer], sellers: List[Seller]) -> Tuple[List[Poi
         sellerPoints.append(Point(sellerAccuQuantity, seller.reservePrice))
     sellerPoints.append(Point(sellerAccuQuantity, 5))
     ## Save figure for debugging
-        # fig = plt.figure()
-        # plt.axis((0,20,3,5))
-        # plt.plot([buyerPoint.x for buyerPoint in buyerPoints], [buyerPoint.y for buyerPoint in buyerPoints], 'r', [
-        #          sellerPoint.x for sellerPoint in sellerPoints], [sellerPoint.y for sellerPoint in sellerPoints], 'b')
-        # plt.show()
-        # fig.savefig('test.png')
+    # fig = plt.figure()
+    # # plt.axis((0,20,0,5))
+    # plt.plot([buyerPoint.x for buyerPoint in buyerPoints], [buyerPoint.y for buyerPoint in buyerPoints], 'r', [
+    #             sellerPoint.x for sellerPoint in sellerPoints], [sellerPoint.y for sellerPoint in sellerPoints], 'b')
+    # plt.show()
+    # fig.savefig('test.png')
     return buyerPoints, sellerPoints
 
 def findIntersection(buyerPoints: List, sellerPoints: List) -> Tuple[List]:
@@ -62,24 +64,32 @@ def findIntersection(buyerPoints: List, sellerPoints: List) -> Tuple[List]:
         coor_buyers = [buyerPoint for buyerPoint in buyerPoints if buyerPoint.x == intercept.x or buyerPoint.y == intercept.y]
         coor_sellers = [sellerPoint for sellerPoint in sellerPoints if sellerPoint.x == intercept.x or sellerPoint.y == intercept.y]
     else:
-        coor_buyers = [buyerPoint for buyerPoint in buyerPoints if buyerPoint.x == intercept.coords[0].x or buyerPoint.y == intercept.coords[0].y]
-        coor_sellers = [sellerPoint for sellerPoint in sellerPoints if sellerPoint.x == intercept.coords[0].x or sellerPoint.y == intercept.coords[0].y]
+        if(len(intercept.bounds) != 4):
+            raise ValueError("incorrect line intercept", list(intercept.bounds), [list(buyerPoint.coords) for buyerPoint in buyerPoints],[list(sellerPoint.coords) for sellerPoint in sellerPoints])
+        coor_buyers = [buyerPoint for buyerPoint in buyerPoints if buyerPoint.x == intercept.bounds[0] or buyerPoint.y == intercept.bounds[1]]
+        coor_sellers = [sellerPoint for sellerPoint in sellerPoints if sellerPoint.x == intercept.bounds[0] or sellerPoint.y == intercept.bounds[1]]
     return coor_buyers , coor_sellers, intercept
 
 def getIntersectPrices(buyerPoints: List[Point], sellerPoints: List[Point], intercept: Point) -> Tuple[float]:
-    if(len(buyerPoints) != 2):
-        raise ValueError('Invalid buyerPoints length')
-    if(len(sellerPoints) != 2):
-        raise ValueError('Invalid sellerPoints length')
-    isHorizontalBuyer= buyerPoints[0].y==buyerPoints[1].y
-    isHorizontalSeller= sellerPoints[0].y==sellerPoints[1].y
+    isHorizontalBuyer = any(p.y == buyerPoints[0].y for p in buyerPoints) 
+    isVerticalBuyer=any(p.x == buyerPoints[0].x for p in buyerPoints)
+    isHorizontalSeller = any(p.y == sellerPoints[0].y for p in sellerPoints) 
+    isVerticalBuyer= any(p.x == sellerPoints[0].x for p in sellerPoints)
+
+    if(len(buyerPoints) != 2 and not isHorizontalBuyer and not isVerticalBuyer):
+        raise ValueError('Invalid buyerPoints length',[list(buyerPoint.coords) for buyerPoint in buyerPoints],[list(sellerPoint.coords) for sellerPoint in sellerPoints])
+    if(len(sellerPoints) != 2 and not isHorizontalSeller and not isVerticalBuyer):
+        raise ValueError('Invalid sellerPoints length',[list(buyerPoint.coords) for buyerPoint in buyerPoints],[list(sellerPoint.coords) for sellerPoint in sellerPoints])
+    
     if(isHorizontalBuyer and isHorizontalSeller):
         return float(buyerPoints[0].y), float(sellerPoints[0].y)
-    if(isHorizontalBuyer and not isHorizontalSeller):
+    if(isHorizontalBuyer and isVerticalBuyer):
         return float(intercept.y), float(sellerPoints[0].y)
-    if(not isHorizontalBuyer and isHorizontalSeller):
+    if(isVerticalBuyer and isHorizontalSeller):
         return float(buyerPoints[0].y), float(intercept.y)
-    if(not isHorizontalBuyer and not isHorizontalSeller):
-        return float(buyerPoints[0].y), float(max([p.y for p in intercept]))
+    if(isVerticalBuyer and isVerticalBuyer):
+        return float(buyerPoints[0].y), float(max([p[1] for p in list(intercept.coords)]))
+
+    raise ValueError("not both", [list(buyerPoint.coords) for buyerPoint in buyerPoints],[list(sellerPoint.coords) for sellerPoint in sellerPoints] , list(intercept.coords))
 
 
