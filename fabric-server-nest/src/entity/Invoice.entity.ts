@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { BuyTransaction } from './BuyTransaction.entity';
-import { SellTransaction } from './SellTransaction.entity';
+import BuyTransaction from './BuyTransaction.entity';
+import SellTransaction from './SellTransaction.entity';
 
 @Entity()
 export default class Invoice {

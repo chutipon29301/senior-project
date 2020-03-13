@@ -1,9 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { SellTransaction } from './SellTransaction.entity';
+import SellTransaction from './SellTransaction.entity';
 import BuyTransaction from './BuyTransaction.entity';
 import BuyerBid from './BuyerBid.entity';
 import SellerBid from './SellerBid.entity';
-import User from './User.entity';
 
 export enum MarketClearingStrategy {
     DISKDA = 'disKDA',

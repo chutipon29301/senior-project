@@ -6,8 +6,8 @@ import { FabricModule } from '../fabric/fabric.module';
 import { ConfigModule } from '../config/config.module';
 import Round from '../entity/Round.entity';
 import User from '../entity/User.entity';
-import { BuyTransaction } from '../entity/BuyTransaction.entity';
-import { SellTransaction } from '../entity/SellTransaction.entity';
+import BuyTransaction from '../entity/BuyTransaction.entity';
+import SellTransaction from '../entity/SellTransaction.entity';
 import Invoice from '../entity/Invoice.entity';
 
 @Module({

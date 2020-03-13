@@ -4,7 +4,7 @@ import Round from './Round.entity';
 import Invoice from './Invoice.entity';
 
 @Entity()
-export class SellTransaction {
+export default class SellTransaction {
     @PrimaryGeneratedColumn()
     id: number;
 

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { BuyTransaction } from './BuyTransaction.entity';
-import { SellTransaction } from './SellTransaction.entity';
+import BuyTransaction from './BuyTransaction.entity';
+import SellTransaction from './SellTransaction.entity';
 import BuyerBid from './BuyerBid.entity';
 import SellerBid from './SellerBid.entity';
 

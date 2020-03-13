@@ -7,8 +7,8 @@ import User, { Organization } from '../entity/User.entity';
 import { ConfigService } from '../config/config.service';
 import { SmartMeterResponse, MarketClearRequestDto, MarketClearResponseDto } from './round.dto';
 import { ChaincodeRoundDto } from '../fabric/fabric.dto';
-import { BuyTransaction } from '../entity/BuyTransaction.entity';
-import { SellTransaction } from '../entity/SellTransaction.entity';
+import BuyTransaction from '../entity/BuyTransaction.entity';
+import SellTransaction from '../entity/SellTransaction.entity';
 import Invoice from '../entity/Invoice.entity';
 
 @Injectable()
