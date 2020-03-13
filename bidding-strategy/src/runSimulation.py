@@ -55,7 +55,7 @@ def get_reward(agent, deals, trade_quantity):
     sign = -1 if agent.role == 'buyer' else 1
      
     if(deal_price!=0): 
-        print(agent.name,deal_price,agent.reservation_price,quantity_got)
+        # print(agent.name,deal_price,agent.reservation_price,quantity_got)
         reward = (sign*(deal_price-agent.reservation_price))*quantity_got
     return [reward,deal_price,agent.reservation_price,quantity_got]
 
