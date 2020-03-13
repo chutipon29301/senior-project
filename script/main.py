@@ -44,11 +44,15 @@ class Pipeline(object):
         os.system('docker volume prune -f')
     
     def startFabric(self):
-        self.service.start('nest', 'fabric')    
+        self.service.start('nest', 'fabric')
     
     def restartFabric(self):
         self.cleanFabric()
         self.startFabric()
+
+    def cleanRestartNest(self):
+        self.cleanFabric()
+        self.service.start('nest')
 
 if __name__ == '__main__':
     
