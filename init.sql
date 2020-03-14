@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS User_Round_Fact(
     roundKey INT NOT NULL,
     startDateKey INT NOT NULL,
     startTimeKey INT NOT NULL,
-    bsi FLOAT(6,3),
-    ssi FLOAT(6,3),
-    utilityIndex FLOAT(8,3),
-    totalPrice FLOAT(8,3),
-    totalQuantity FLOAT(8,3),
-    avaragePricePerUnit FLOAT(8,3),
+    bsi FLOAT(8, 5),
+    ssi FLOAT(8, 5),
+    utilityIndex FLOAT(8, 2),
+    totalPrice FLOAT(8, 2),
+    totalQuantity FLOAT(8, 2),
+    avaragePricePerUnit FLOAT(4, 2),
     PRIMARY KEY(userKey, roundKey, startDateKey, startTimeKey),
     FOREIGN KEY(userKey) REFERENCES User_Dim(userKey),
     FOREIGN KEY(roundKey) REFERENCES Round_Dim(roundKey),
@@ -64,7 +64,11 @@ CREATE TABLE IF NOT EXISTS Market_Round_Fact(
     roundKey INT NOT NULL,
     startDateKey INT NOT NULL,
     startTimeKey INT NOT NULL,
-    mti FLOAT(8,3),
+    mti FLOAT(6, 5),
+    totalQuantityInSystem FLOAT(8, 2),
+    totalPriceInSystem FLOAT(8, 2),
+    totalQuantity FLOAT(8, 2),
+    totalPrice FLOAT(8, 2),
     PRIMARY KEY(roundKey, startDateKey, startTimeKey),
     FOREIGN KEY(roundKey) REFERENCES Round_Dim(roundKey),
     FOREIGN KEY(startDateKey) REFERENCES Date_Dim(dateKey),
@@ -78,8 +82,8 @@ CREATE TABLE IF NOT EXISTS Transaction_Fact(
     startDateKey INT NOT NULL,
     startTimeKey INT NOT NULL,
     invoiceId NVARCHAR(36) NOT NULL,
-    pricePerUnit FLOAT(8,3),
-    quantity FLOAT(8,3),
+    pricePerUnit FLOAT(4, 2),
+    quantity FLOAT(8, 2),
     PRIMARY KEY(buyerKey, sellerKey, roundKey, startDateKey, startTimeKey),
     FOREIGN KEY(buyerKey) REFERENCES User_Dim(userKey),
     FOREIGN KEY(sellerKey) REFERENCES User_Dim(userKey),
@@ -88,3 +92,9 @@ CREATE TABLE IF NOT EXISTS Transaction_Fact(
     FOREIGN KEY(startTimeKey) REFERENCES Time_Dim(timeKey)
 );
 
+-- CREATE USER 'grafana'@'%' IDENTIFIED BY 'password';
+-- GRANT SELECT ON Analytics.* TO 'grafana'@'%';
+
+-- CREATE DATABASE Metabase;
+-- CREATE USER 'metabase'@'%' IDENTIFIED BY 'password';
+-- GRANT ALL PRIVILEGES ON Metabase.* TO 'metabase'@'%';
