@@ -23,6 +23,12 @@ export class RoundController {
     }
 
     @Orgs()
+    @Get('unclearRound')
+    public async listUnclearRound(): Promise<Round[]> {
+        return this.service.listUnclearRounds();
+    }
+
+    @Orgs()
     @Get(':id')
     public async getRound(@RequestUser() user: User, @Param('id') id: string) {
         return this.service.getChaincodeInRound(id, user);

@@ -60,6 +60,12 @@ export class RoundService {
         return this.roundRepository.find();
     }
 
+    public async listUnclearRounds(): Promise<Round[]> {
+        return this.roundRepository.find({
+            isActive: true,
+        });
+    }
+
     public async getChaincodeInRound(roundId: string, { organization, id }: User): Promise<ChaincodeRoundDto> {
         if (this.configService.useFabric) {
             return this.fabricService.getRound(roundId, organization, id);
