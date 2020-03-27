@@ -30,13 +30,13 @@ class User():
 
     def createAll(self):
         df = pd.read_csv(self.USER_LIST).fillna('')
-        bar = ChargingBar('Creating users', max=len(df.index),
-                          suffix='%(percent)d%%; Elapsed: %(elapsed)ds; ETA: %(eta)ds')
-        for index, row in df.iterrows():
-            userInfo = asyncio.run(self.asyncCreateUserAndToken(row['name'], row['organization'], row['smartMeterId']))
-            self.userDataframe = self.userDataframe.append(
-                userInfo, ignore_index=True)
-            bar.next()
+        bar = ChargingBar(
+            'Creating users',
+            max = len(df.index),
+            suffix = '%(percent)d%%; Elapsed: %(elapsed)ds; ETA: %(eta)ds'
+        )
+        responses = asyncio.run(self.asyncCreateUsersAndTokens(df.to_dict('records'), bar))
+        self.userDataframe = pd.DataFrame(responses)   
         self.userDataframe.to_csv(self.USER_STORAGE, index=False)
         bar.finish()
 
@@ -54,8 +54,11 @@ class User():
 
     def updateToken(self):
         df = pd.read_csv(self.USER_STORAGE)
-        bar = ChargingBar('Updating token', max=len(df.index),
-                          suffix='%(percent)d%%; Elapsed: %(elapsed)ds; ETA: %(eta)ds')
+        bar = ChargingBar(
+            'Updating token',
+            max = len(df.index),
+            suffix = '%(percent)d%%; Elapsed: %(elapsed)ds; ETA: %(eta)ds'
+        )
         for index, row in df.iterrows():
             id = row['id']
             response = asyncio.run(self.asyncGetToken(id))
@@ -65,10 +68,31 @@ class User():
         self.userDataframe.to_csv(self.USER_STORAGE, index=False)
         bar.finish()
 
-    async def asyncCreateUserAndToken(self, username, organization, smartMeterId):
+    async def asyncCreateUsersAndTokens(self, users, loadingBar=None):
         async with aiohttp.ClientSession() as session:
+            createUserAndTokenPromise = [self.asyncCreateUserAndToken(user['name'], user['organization'], user['smartMeterId'], session, loadingBar) for user in users]
+            responses = await asyncio.gather(*createUserAndTokenPromise)
+            return responses
+
+    async def asyncCreateUserAndToken(self, username, organization, smartMeterId, session=None, loadingBar=None):
+        if session == None:
+            async with aiohttp.ClientSession() as session:
+                userResponse = await self.asyncCreateUser(username, organization, smartMeterId, session)
+                tokenResponse = await self.asyncGetToken(userResponse['id'], session)
+                if loadingBar != None:
+                    loadingBar.next()
+                return {
+                    'name': userResponse['name'],
+                    'id': userResponse['id'],
+                    'organization': userResponse['organization'],
+                    'token': tokenResponse['token'],
+                    'smartMeterId': smartMeterId,
+                }
+        else:
             userResponse = await self.asyncCreateUser(username, organization, smartMeterId, session)
             tokenResponse = await self.asyncGetToken(userResponse['id'], session)
+            if loadingBar != None:
+                loadingBar.next()
             return {
                 'name': userResponse['name'],
                 'id': userResponse['id'],
@@ -96,7 +120,6 @@ class User():
                                 "organizationName": organization,
                             }) as response:
                     return await response.json()
-
         if session == None:
             async with aiohttp.ClientSession() as session:
                 return await createUser(session, username, organization)
@@ -107,7 +130,7 @@ class User():
         async def getToken(session, userId):
             async with session.post(
                     urllib.parse.urljoin(self.BASE_URL, 'auth/token'),
-                    data={
+                    data = {
                         "id": userId
                     }) as response:
                 return await response.json()
