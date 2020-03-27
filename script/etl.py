@@ -21,7 +21,7 @@ class ETL:
         self.loadRoundDim()
         self.loadDateDim()
         self.loadTimeDim()
-    
+
     def loadFactTable(self):
         self.loadMarketRoundFact()
         self.loadUserRoundFact()
@@ -75,7 +75,7 @@ class ETL:
                         SUM(price * quantity) totalPrice,
                         SUM(CASE WHEN buyer.organization = 'Utility' OR seller.organization = 'Utility' THEN 0 ELSE quantity END) totalQuantityInSystem,
                         SUM(CASE WHEN buyer.organization = 'Utility' OR seller.organization = 'Utility' THEN 0 ELSE price * quantity END) totalPriceInSystem
-                    FROM 
+                    FROM
                         fabric.invoice invoice
                     LEFT JOIN
                         fabric.buy_transaction ON buy_transaction.id = invoice.buyTransactionId
@@ -89,7 +89,7 @@ class ETL:
                 ) a ON a.sellerRoundId = round.id AND a.buyerRoundId = round.id
             LEFT JOIN
                 Analytics.Date_Dim dateDim ON dateDim.fullDate = DATE(round.startDate)
-            LEFT JOIN 
+            LEFT JOIN
                 Analytics.Time_Dim timeDim ON timeDim.time = TIME(round.startDate)
             LEFT JOIN
                 Analytics.Round_Dim roundDim ON roundDim.roundId = round.id;
@@ -97,10 +97,43 @@ class ETL:
             frame.to_sql('Market_Round_Fact', con=analyticsDbConnection,
                          if_exists='append', index=False)
 
+    def loadBuyerRoundFact(self):
+        with self.sqlEngine.connect() as dbConnection, self.analyticsSqlEngine.connect() as analyticsDbConnection:
+            frame = pd.read_sql('''
+            SELECT
+                userDim.userKey userKey,
+                roundDim.roundKey roundKey,
+                dateDim.dateKey startDateKey,
+                timeDim.timeKey startTimeKey,
+                buyTransaction.bsi bsi,
+                buyTransaction.utilityIndex utilityIndex,
+                SUM(invoice.price * invoice.quantity) totalPrice,
+                SUM(invoice.quantity) totalQuantity,
+                AVG(invoice.price) avaragePricePerUnit
+            FROM fabric.invoice invoice
+            LEFT JOIN
+                fabric.buy_transaction buyTransaction ON buyTransaction.id = invoice.buyTransactionId
+            LEFT JOIN 
+                fabric.round round ON round.id = buyTransaction.roundId
+            LEFT JOIN 
+                Analytics.User_Dim userDim ON userDim.userId = buyTransaction.userId
+            LEFT JOIN
+                Analytics.Round_Dim roundDim ON roundDim.roundId = buyTransaction.roundId
+            LEFT JOIN
+                Analytics.Date_Dim dateDim ON dateDim.fullDate = DATE(round.startDate)
+            LEFT JOIN 
+                Analytics.Time_Dim timeDim ON timeDim.time = TIME(round.startDate)
+            GROUP BY 
+                userDim.userKey, roundDim.roundKey, dateDim.dateKey, timeDim.timeKey, buyTransaction.bsi, buyTransaction.utilityIndex;
+            ''', dbConnection)
+            print(frame)
+            frame.to_sql('Buyer_Round_Fact', con=analyticsDbConnection,
+                         if_exists='append', index=False)
+
     def loadUserRoundFact(self):
         with self.sqlEngine.connect() as dbConnection, self.analyticsSqlEngine.connect() as analyticsDbConnection:
             frame = pd.read_sql('''
-            SELECT 
+            SELECT
                 userDim.userKey userKey,
                 roundDim.roundKey roundKey,
                 dateDim.dateKey startDateKey,
@@ -120,13 +153,13 @@ class ETL:
                 Analytics.Round_Dim roundDim ON roundDim.roundId = buy_transaction.roundId
             LEFT JOIN
                 Analytics.Date_Dim dateDim ON dateDim.fullDate = DATE(round.startDate)
-            LEFT JOIN 
+            LEFT JOIN
                 Analytics.Time_Dim timeDim ON timeDim.time = TIME(round.startDate)
             LEFT JOIN
                 Analytics.User_Dim userDim ON userDim.userId = buy_transaction.userId
-            GROUP BY userDim.userKey, roundDim.roundKey ,userKey,roundKey,startDateKey,startTimeKey,
-            bsi,utilityIndex,totalPrice,avaragePricePerUnit
-            UNION SELECT 
+            GROUP BY userDim.userKey, roundDim.roundKey, userKey, roundKey, startDateKey, startTimeKey,
+            bsi, utilityIndex, totalPrice, avaragePricePerUnit
+            UNION SELECT
                 userDim.userKey userKey,
                 roundDim.roundKey roundKey,
                 dateDim.dateKey startDateKey,
@@ -146,12 +179,12 @@ class ETL:
                 Analytics.Round_Dim roundDim ON roundDim.roundId = sell_transaction.roundId
             LEFT JOIN
                 Analytics.Date_Dim dateDim ON dateDim.fullDate = DATE(round.startDate)
-            LEFT JOIN 
+            LEFT JOIN
                 Analytics.Time_Dim timeDim ON timeDim.time = TIME(round.startDate)
             LEFT JOIN
                 Analytics.User_Dim userDim ON userDim.userId = sell_transaction.userId
-            GROUP BY userDim.userId,roundDim.roundId,userKey,roundKey,startDateKey,startTimeKey,
-            ssi,utilityIndex,totalPrice,avaragePricePerUnit
+            GROUP BY userDim.userId, roundDim.roundId, userKey, roundKey, startDateKey, startTimeKey,
+            ssi, utilityIndex, totalPrice, avaragePricePerUnit
             ''',dbConnection)
             frame.to_sql('User_Round_Fact', con=analyticsDbConnection,
                          if_exists='append', index=False)
@@ -159,7 +192,7 @@ class ETL:
     def loadTransactionFact(self):
         with self.sqlEngine.connect() as dbConnection, self.analyticsSqlEngine.connect() as analyticsDbConnection:
             frame = pd.read_sql('''
-            SELECT 
+            SELECT
                 buyer.userKey buyerKey,
                 seller.userKey sellerKey,
                 roundDim.roundKey roundKey,
@@ -170,12 +203,12 @@ class ETL:
                 invoice.quantity quantity
             FROM fabric.invoice invoice
             LEFT JOIN
-                fabric.buy_transaction buyTransaction ON buyTransaction.id = invoice.buyTransactionId 
+                fabric.buy_transaction buyTransaction ON buyTransaction.id = invoice.buyTransactionId
             LEFT JOIN
                 fabric.sell_transaction sellTransaction ON sellTransaction.id = invoice.sellTransactionId
-            LEFT JOIN 
+            LEFT JOIN
                 Analytics.User_Dim seller ON sellTransaction.userId = seller.userId
-            LEFT JOIN 
+            LEFT JOIN
                 Analytics.User_Dim buyer ON buyTransaction.userId = buyer.userId
             LEFT JOIN
                 fabric.round round ON round.id = buyTransaction.roundId AND round.id = sellTransaction.roundId
@@ -183,7 +216,7 @@ class ETL:
                 Analytics.Round_Dim roundDim ON roundDim.roundId = buyTransaction.roundId AND roundDim.roundId = sellTransaction.roundId
             LEFT JOIN
                 Analytics.Date_Dim dateDim ON dateDim.fullDate = DATE(round.startDate)
-            LEFT JOIN 
+            LEFT JOIN
                 Analytics.Time_Dim timeDim ON timeDim.time = TIME(round.startDate)
             ''', dbConnection)
             frame.to_sql('Transaction_Fact', con=analyticsDbConnection,
