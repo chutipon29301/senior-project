@@ -1,4 +1,4 @@
-import { Repository, MoreThan, LessThanOrEqual } from 'typeorm';
+import { Repository, MoreThan, LessThanOrEqual, Transaction, TransactionRepository } from 'typeorm';
 import { Injectable, BadRequestException, HttpService, ServiceUnavailableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import Round, { MarketClearingStrategy } from '../entity/Round.entity';
@@ -25,12 +25,13 @@ export class RoundService {
         private readonly httpService: HttpService,
     ) { }
 
-    public async createRound(startDate: Date, endDate: Date, { organization, id }: User): Promise<Round> {
+    @Transaction()
+    public async createRound(startDate: Date, endDate: Date, { organization, id }: User, @TransactionRepository(Round) roundTransactionRepository?: Repository<Round>): Promise<Round> {
         const round = new Round();
         round.startDate = startDate;
         round.endDate = endDate;
         round.modifyDate = new Date();
-        await this.roundRepository.save(round);
+        await roundTransactionRepository.save(round);
         if (this.configService.useFabric) {
             await this.fabricService.createRound(round.id, organization, id);
         }
