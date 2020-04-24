@@ -18,6 +18,6 @@ class StaticDataService:
             test_df = self.df.loc[index:].reset_index()
             cols_of_interest = ['CHAM1-PV','CHAM2-PV','CHAM3-PV','CHAM4-PV','CHAM5-PV'] 
             print(len(test_df.index))
-            test_df=test_df[(test_df[cols_of_interest] != 0).any(axis=1)].reset_index()
+#             test_df=test_df[(test_df[cols_of_interest] != 0).any(axis=1)].reset_index()
             print(len(test_df.index))
         return train_df, test_df
